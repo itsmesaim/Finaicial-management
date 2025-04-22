@@ -1,3 +1,23 @@
+## Clone the repository
+```bash  
+git clone https://github.com/itsmesaim/Finaicial-management.git   
+```
+### Navigate into the project directory 
+```bash
+cd Finaicial-management
+```
+ ### Switch to the develop branch 
+ ```bash
+ git checkout develop 
+```
+ 
+ ### Pull latest updates from develop 
+
+ ```bash
+ git pull origin develop
+```
+
+
 ## How to Run This Project
 
 ### 1. Install Dependencies
@@ -39,25 +59,6 @@ uvicorn app.main:app --reload
 Important:
 Do not run uvicorn main:app --reload — it will fail because main.py is not in the root directory.
 
-
-## Clone the repository
-```bash  
-git clone https://github.com/itsmesaim/Finaicial-management.git   
-```
-### Navigate into the project directory 
-```bash
-cd Finaicial-management
-```
- ### Switch to the develop branch 
- ```bash
- git checkout develop 
-```
- 
- ### Pull latest updates from develop 
-
- ```bash
- git pull origin develop
-```
 
 ##  How to Work with Git (Team Workflow)
 
