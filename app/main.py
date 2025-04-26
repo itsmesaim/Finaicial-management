@@ -4,8 +4,10 @@ from dotenv import load_dotenv
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from app.auth.authentication import validate_firebase_token
-# from app.services.firestore_service import FirestoreService
+from app.services.firestore_service import FirestoreService
 import os
+from dotenv import load_dotenv
+
 
 app = FastAPI()
 load_dotenv()
@@ -43,11 +45,38 @@ async def handle_root_post(request: Request):
 @app.get("/firebase-config")
 async def firebase_config():
     config = {
-        "apiKey": os.getenv("FIREBASE_API_KEY"),
-        "authDomain": os.getenv("FIREBASE_AUTH_DOMAIN"),
-        "projectId": os.getenv("FIREBASE_PROJECT_ID"),
-        "storageBucket": os.getenv("FIREBASE_STORAGE_BUCKET"),
-        "messagingSenderId": os.getenv("FIREBASE_MESSAGING_SENDER_ID"),
-        "appId": os.getenv("FIREBASE_APP_ID"),
+        "apiKey": "AIzaSyBQephotjyQpxZnMM1L8NlS0e09YcEy5ok",
+        "authDomain": "task-manager-cbe64.firebaseapp.com",
+        "projectId": "task-manager-cbe64",
+        "storageBucket": "task-manager-cbe64.appspot.com",
+        "messagingSenderId": "711796803171",
+        "appId": "1:711796803171:web:8e2e5ae52bc3188dd05a56",
+        "measurementId": "G-BJXVNHZ404"
     }
     return JSONResponse(config)
+
+#connecting bank account route
+
+@app.post("/connect-bank-account")
+async def connect_bank_account(request: Request):
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return JSONResponse(status_code=401, content={"message": "Authorization header missing or invalid"})
+
+    id_token = auth_header.split(" ")[1]
+    user_info = validate_firebase_token(id_token)
+    if not user_info:
+        return JSONResponse(status_code=401, content={"message": "Invalid or expired token"})
+
+    data = await request.json()
+    account_holder_name = data.get('account_holder_name')
+    account_number = data.get('account_number')
+
+    if not account_holder_name or not account_number:
+        return JSONResponse(status_code=400, content={"message": "Missing account holder or account number"})
+
+    account_last4 = account_number[-4:]  # Only store last 4 digits
+    FirestoreService.save_bank_account_info(user_info['uid'], account_holder_name, account_last4)
+
+
+    return JSONResponse(status_code=200, content={"message": "Bank account connected securely."})
