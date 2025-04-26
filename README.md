@@ -1,3 +1,9 @@
+# Financial Management System
+
+[![Contributors](https://img.shields.io/github/contributors/itsmesaim/Finaicial-management.svg?style=for-the-badge)](https://github.com/itsmesaim/Finaicial-management/graphs/contributors)
+
+---
+
 ## Clone the repository
 ```bash  
 git clone https://github.com/itsmesaim/Finaicial-management.git   
@@ -124,3 +130,18 @@ Go to your Git platform (GitHub, GitLab, etc.):
 ---
 
  This ensures safe collaboration and clean version history for everyone.
+
+<br/>
+
+# 🚀 Project Owner
+
+- [<img src="https://github.com/itsmesaim.png" width="80px"><br><sub>itsmesaim</sub>](https://github.com/itsmesaim)
+
+## ✨ Contributors
+
+Thanks to these amazing people:
+
+| [<img src="https://github.com/ahmedbilalkhan123.png" width="100px"><br><sub>ahmedbilalkhan123</sub>](https://github.com/ahmedbilalkhan123) | [<img src="https://github.com/dhanishthayyil.png" width="100px"><br><sub>Dany</sub>](https://github.com/dhanishthayyil) | [<img src="https://github.com/Evanskiplagat.png" width="100px"><br><sub>evans kiplagat kimutai</sub>](https://github.com/Evanskiplagat) | [<img src="https://github.com/rkeesari98.png" width="100px"><br><sub>rkeesari98</sub>](https://github.com/rkeesari98) |
+| :---: | :---: | :---: | :---: |
+| [<img src="https://github.com/SaiSudheer5530.png" width="100px"><br><sub>SaiSudheer5530</sub>](https://github.com/SaiSudheer5530) | [<img src="https://github.com/TejeshMalepati.png" width="100px"><br><sub>TejeshMalepati</sub>](https://github.com/TejeshMalepati) | [<img src="https://github.com/vamsikiran75.png" width="100px"><br><sub>vamsikiran75</sub>](https://github.com/vamsikiran75) | [<img src="https://github.com/vineet705.png" width="100px"><br><sub>Vinit Korat</sub>](https://github.com/vineet705) |
+| :---: | :---: | :---: | :---: |
