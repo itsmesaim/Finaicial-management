@@ -2,6 +2,7 @@ from google.cloud import firestore
 from google.cloud.firestore import DocumentReference
 from datetime import datetime
 
+
 firestore_db = firestore.Client()
 
 class FirestoreService:
@@ -24,3 +25,13 @@ class FirestoreService:
             data["id"] = user_id
             return data
         return None
+    #to save the bank information
+    @staticmethod
+    def save_bank_account_info(uid, account_holder_name, account_last4):
+        bank_data = {
+            'account_holder_name': account_holder_name,
+            'account_last4': account_last4,
+            'created_by_uid': uid,
+            'created_at': datetime.utcnow()
+        }
+        return firestore_db.collection('bank_accounts').document(uid).set(bank_data)
