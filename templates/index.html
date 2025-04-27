@@ -1,45 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - FMSD</title>
-    <style>
-        body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: #f8f9fa; }
-        .container { display: flex; height: 100vh; }
-        .left-panel, .right-panel { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px; background: #ffffff; border-radius: 20px; margin: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .right-panel { background: #f1f3f5; }
-        .form-box { width: 100%; max-width: 400px; }
-        h1 { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
-        p { margin-bottom: 30px; color: #6c757d; }
-        input, button { width: 100%; padding: 12px 15px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #dee2e6; font-size: 16px; }
-        input:focus { border-color: #0d6efd; outline: none; }
-        button { background-color: #0d6efd; color: #fff; border: none; font-weight: 600; cursor: pointer; transition: 0.3s; }
-        button:hover { background-color: #0b5ed7; }
-        .small-text { font-size: 14px; }
-        .small-text a { color: #0d6efd; text-decoration: none; }
-        .small-text a:hover { text-decoration: underline; }
-        .illustration img { width: 80%; max-width: 400px; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login | Financial Management</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+  <script type="module" src="/static/firebase-login.js"></script>
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: "Segoe UI", sans-serif;
+    }
+    .login-container {
+      max-width: 1000px;
+      margin: 50px auto;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.05);
+      display: flex;
+      overflow: hidden;
+    }
+    .form-section {
+      flex: 1;
+      padding: 40px;
+    }
+    .image-section {
+      flex: 1;
+      background-color: #f1f3f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .image-section img {
+      width: 80%;
+    }
+    .form-control {
+      border-radius: 6px;
+    }
+    .btn-primary {
+      background-color: #4f46e5;
+      border-color: #4f46e5;
+    }
+    #sign-out {
+      margin-top: 10px;
+    }
+  </style>
 </head>
-
 <body>
-    <div class="container">
-        <div class="left-panel">
-            <div class="form-box">
-                <h1>Get Started Now</h1>
-                <p>Enter your credentials to access your account.</p>
-                <input type="email" id="email" placeholder="Email">
-                <input type="password" id="password" placeholder="Password">
-                <button id="login">Login</button>
-                <p class="small-text">Don't have an account? <a href="signup-method.html">Signup</a></p>
-            </div>
+
+  <div class="login-container">
+    <div class="form-section">
+      <div id="user-info" hidden>
+        <h3 id="user-label" class="mb-4 text-primary"></h3>
+        <button id="sign-out" class="btn btn-outline-danger w-100">Sign Out</button>
+      </div>
+
+      <div id="login-box">
+        <h3 class="mb-3">Get Started Now</h3>
+        <p class="text-muted mb-4">Enter your credentials to access your account.</p>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="email" class="form-control" placeholder="Enter email" />
         </div>
-        <div class="right-panel illustration">
-            <img src="illustration.png" alt="Illustration">
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="password" class="form-control" placeholder="Enter password" />
         </div>
+        <button id="login" class="btn btn-primary w-100 mt-2">Login</button>
+        <p class="text-center mt-3">Don't have an account? <a href="/signup">Signup</a></p>
+      </div>
     </div>
 
-    <script type="module" src="firebase-login.js"></script>
+    <div class="image-section">
+      <img src="/static/illustration.png" alt="Illustration">
+    </div>
+  </div>
+
 </body>
 </html>

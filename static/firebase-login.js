@@ -43,84 +43,102 @@ function attachEventListeners() {
     const signUpBtn = document.getElementById("sign-up");
     const signOutBtn = document.getElementById("sign-out");
 
-    if (!loginBtn || !signUpBtn || !signOutBtn) {
-        console.error("Missing elements. Event listeners not attached.");
+    if (loginBtn) {
+        loginBtn.addEventListener("click", handleLogin);
+    }
+    if (signUpBtn) {
+        signUpBtn.addEventListener("click", handleSignUp);
+    }
+    if (signOutBtn) {
+        signOutBtn.addEventListener("click", handleSignOut);
+    }
+}
+
+async function handleLogin() {
+    console.log("🔹 Login button clicked");
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        user.getIdToken(true).then(async (token) => {
+            document.cookie = "token=" + token + ";path=/;SameSite=Strict";
+            updateUI(true, user.email);
+            await sendVerificationEmail(user.email);
+            window.location = "/verify-code";
+        });
+    } catch (error) {
+        console.error("Login Error:", error.code, error.message);
+    }
+}
+
+async function handleSignUp() {
+    console.log("🔹 Sign Up button clicked");
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirm-password") ? document.getElementById("confirm-password").value : null;
+
+    if (confirmPassword !== null && password !== confirmPassword) {
+        alert("Passwords do not match!");
         return;
     }
 
-    // Signup logic
-    signUpBtn.addEventListener("click", () => {
-        console.log("🔹 Sign Up button clicked");
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        user.getIdToken(true).then(async (token) => {
+            document.cookie = "token=" + token + ";path=/;SameSite=Strict";
+            updateUI(true, user.email);
+            await sendVerificationEmail(user.email);
+            window.location = "/verify-code";
+        });
+    } catch (error) {
+        console.error("Sign Up Error:", error.code, error.message);
+    }
+}
 
-        createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                user.getIdToken(true).then((token) => {
-                    document.cookie = "token=" + token + ";path=/;SameSite=Strict";
-                    console.log("Account created:", user.email);
-                    window.location = window.location.pathname;
-                });
-            })
-            .catch((error) => {
-                console.error("Sign Up Error:", error.code, error.message);
-            });
-    });
+async function handleSignOut() {
+    console.log("🔹 Sign Out button clicked");
+    try {
+        await signOut(auth);
+        document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+        console.log("Signed out successfully");
+        window.location = "/";
+    } catch (error) {
+        console.error("Sign-out Error:", error.message);
+    }
+}
 
-    // Login logic
-    loginBtn.addEventListener("click", () => {
-        console.log("🔹 Login button clicked");
-        const email = document.getElementById("email").value;
-        const password = document.getElementById("password").value;
+async function sendVerificationEmail(email) {
+    try {
+        const formData = new FormData();
+        formData.append("email", email);
 
-        signInWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                const user = userCredential.user;
-                user.getIdToken(true).then((token) => {
-                    document.cookie = "token=" + token + ";path=/;SameSite=Strict";
-                    console.log("Logged in:", user.email);
-                    window.location = window.location.pathname;
-                });
-            })
-            .catch((error) => {
-                console.error("Login Error:", error.code, error.message);
-            });
-    });
-
-    // Sign-out logic
-    signOutBtn.addEventListener("click", () => {
-        console.log("Sign Out button clicked");
-        signOut(auth)
-            .then(() => {
-                document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
-                console.log("signed out successfully");
-                window.location = window.location.pathname;
-            })
-            .catch((error) => {
-                console.error("Sign-out Error:", error.message);
-            });
-    });
+        await fetch("/send-verification", {
+            method: "POST",
+            body: formData
+        });
+    } catch (error) {
+        console.error("Failed to send verification email:", error);
+    }
 }
 
 function updateUI(isLoggedIn, email = "") {
-    // Show/hide elements based on login state
     const userLabel = document.getElementById("user-label");
     const loginBox = document.getElementById("login-box");
     const signOutBtn = document.getElementById("sign-out");
     const userInfo = document.getElementById("user-info");
 
     if (isLoggedIn) {
-        // Show user info
-        userLabel.textContent = `Welcome, ${email}`;
-        loginBox.hidden = true; 
-        signOutBtn.hidden = false
-        userInfo.hidden = false; 
+        if (userLabel) userLabel.textContent = `Welcome, ${email}`;
+        if (loginBox) loginBox.hidden = true;
+        if (signOutBtn) signOutBtn.hidden = false;
+        if (userInfo) userInfo.hidden = false;
     } else {
-        // Hide user info
-        userLabel.textContent = "";
-        loginBox.hidden = false;
-        signOutBtn.hidden = true;
-        userInfo.hidden = true;
+        if (userLabel) userLabel.textContent = "";
+        if (loginBox) loginBox.hidden = false;
+        if (signOutBtn) signOutBtn.hidden = true;
+        if (userInfo) userInfo.hidden = true;
     }
 }
