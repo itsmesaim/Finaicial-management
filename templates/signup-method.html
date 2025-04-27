@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Signup - Choose Method</title>
+  <style>
+    body { margin: 0; padding: 0; font-family: 'Poppins', sans-serif; background-color: #f8f9fa; }
+    .container { display: flex; height: 100vh; }
+    .left-panel, .right-panel { flex: 1; display: flex; justify-content: center; align-items: center; padding: 40px; background: #ffffff; border-radius: 20px; margin: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+    .right-panel { background: #f1f3f5; }
+    .form-box { width: 100%; max-width: 400px; }
+    h1 { font-size: 28px; font-weight: 700; margin-bottom: 10px; }
+    p { margin-bottom: 30px; color: #6c757d; }
+    input, button, .option-btn { width: 100%; padding: 12px 15px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #dee2e6; font-size: 16px; }
+    input:focus { border-color: #0d6efd; outline: none; }
+    button { background-color: #0d6efd; color: #fff; border: none; font-weight: 600; cursor: pointer; transition: 0.3s; }
+    button:hover { background-color: #0b5ed7; }
+    .option-btn { 
+      display: flex; 
+      align-items: center; 
+      background: #f8f9fa; 
+      color: #495057; 
+      font-weight: 500; 
+      justify-content: center;
+      gap: 10px;
+      font-size: 16px;
+    }
+    .option-btn:hover { background-color: #e2e6ea; }
+    .small-text { font-size: 14px; }
+    .small-text a { color: #0d6efd; text-decoration: none; }
+    .small-text a:hover { text-decoration: underline; }
+    .illustration img { width: 80%; max-width: 400px; }
+    .emoji {
+      font-size: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="left-panel">
+      <div class="form-box">
+        <h1>Create an account</h1>
+        <p>Welcome to FMSD - Let's create your account.</p>
+
+        <button class="option-btn"><span class="emoji">✉️</span> Email</button>
+        <button class="option-btn"><span class="emoji">📞</span> Phone</button>
+        <button class="option-btn"><span class="emoji">🔒</span> Authenticator</button>
+
+        <a href="signup.html"><button>Next</button></a>
+
+        <p class="small-text">Already have an account? <a href="index.html">Login</a></p>
+      </div>
+    </div>
+    <div class="right-panel illustration">
+      <img src="illustration.png" alt="Illustration">
+    </div>
+  </div>
+
+  <script type="module" src="firebase-login.js"></script>
+</body>
+</html>
