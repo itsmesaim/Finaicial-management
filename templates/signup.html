@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Signup | Financial Management</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
   <script type="module" src="/static/firebase-login.js"></script>
@@ -47,32 +47,38 @@
 
   <div class="signup-container">
     <div class="form-section">
-      <div id="login-box">
+      <div id="signup-section">
         <h3 class="mb-3">Create an Account</h3>
         <p class="text-muted mb-4">Welcome to FMSD - Let's create your account.</p>
+
         <div class="form-group">
           <label>Email</label>
-          <input type="email" id="email" class="form-control" placeholder="Enter email" />
+          <input type="email" id="signup-email" class="form-control" placeholder="Enter email" />
         </div>
+
         <div class="form-group">
           <label>Name</label>
-          <input type="text" id="name" class="form-control" placeholder="Enter name" />
+          <input type="text" id="signup-name" class="form-control" placeholder="Enter your name" />
         </div>
+
         <div class="form-group">
           <label>Password</label>
-          <input type="password" id="password" class="form-control" placeholder="Enter password" />
+          <input type="password" id="signup-password" class="form-control" placeholder="Enter password" />
         </div>
+
         <div class="form-group">
           <label>Confirm Password</label>
-          <input type="password" id="confirm-password" class="form-control" placeholder="Confirm password" />
+          <input type="password" id="signup-confirm-password" class="form-control" placeholder="Confirm password" />
         </div>
-        <button id="sign-up" class="btn btn-primary w-100 mt-2">Sign Up</button>
+
+        <button id="signup-btn" class="btn btn-primary w-100 mt-2">Sign Up</button>
+
         <p class="text-center mt-3">Already have an account? <a href="/">Login</a></p>
       </div>
     </div>
 
     <div class="image-section">
-      <img src="/static/illustration.png" alt="Illustration">
+      <img src="/static/illustration.png" alt="Illustration" />
     </div>
   </div>
 
