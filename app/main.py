@@ -1,16 +1,14 @@
-from fastapi import FastAPI, Request, Form, Depends
+from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from dotenv import load_dotenv
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from app.auth.authentication import validate_firebase_token
+from app.services.firestore_service import FirestoreService
 import os
 import random
 import smtplib
 from email.message import EmailMessage
-
-from app.services.firestore_service import FirestoreService
-from dotenv import load_dotenv
 
 app = FastAPI()
 load_dotenv()
@@ -21,6 +19,8 @@ templates = Jinja2Templates(directory="templates")
 
 # Temporary storage for verification codes
 verification_codes = {}
+
+
 
 def generate_verification_code():
     return ''.join(random.choices('0123456789', k=6))
@@ -39,6 +39,38 @@ def send_verification_email(receiver_email, code):
         smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
         smtp.send_message(msg)
 
+def send_email_to_user(receiver_email, subject, body):
+    EMAIL_ADDRESS = os.getenv("SMTP_EMAIL")
+    EMAIL_PASSWORD = os.getenv("SMTP_PASSWORD")
+
+    msg = EmailMessage()
+    msg['Subject'] = subject
+    msg['From'] = EMAIL_ADDRESS
+    msg['To'] = receiver_email
+    msg.set_content(body)
+
+    with smtplib.SMTP_SSL('smtp.gmail.com', 465) as smtp:
+        smtp.login(EMAIL_ADDRESS, EMAIL_PASSWORD)
+        smtp.send_message(msg)
+
+def notify_all_users(transaction_info):
+    all_users = FirestoreService.get_all_users()
+
+    
+    user_details = FirestoreService.get_user(transaction_info.get('user_id'))
+    user_name = user_details.get('name') if user_details else "Unknown User"
+
+    subject = "⚡ Important: High Value Transaction Alert"
+    body = f"A new transaction exceeded 100 euros!\n\nDetails:\nUser: {user_name}\nAmount: {transaction_info.get('amount')} €"
+
+    for user in all_users:
+        email = user.get('email')
+        if email:
+            send_email_to_user(email, subject, body)
+
+
+
+#home
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
     id_token = request.cookies.get("token")
@@ -52,16 +84,15 @@ async def home(request: Request):
 @app.get("/firebase-config")
 async def firebase_config():
     config = {
-        "apiKey": "AIzaSyBQephotjyQpxZnMM1L8NlS0e09YcEy5ok",
-        "authDomain": "task-manager-cbe64.firebaseapp.com",
-        "projectId": "task-manager-cbe64",
-        "storageBucket": "task-manager-cbe64.appspot.com",
-        "messagingSenderId": "711796803171",
-        "appId": "1:711796803171:web:8e2e5ae52bc3188dd05a56",
+        "apiKey": os.getenv("FIREBASE_API_KEY"),
+        "authDomain": os.getenv("FIREBASE_AUTH_DOMAIN"),
+        "projectId": os.getenv("FIREBASE_PROJECT_ID"),
+        "storageBucket": os.getenv("FIREBASE_STORAGE_BUCKET"),
+        "messagingSenderId": os.getenv("FIREBASE_MESSAGING_SENDER_ID"),
+        "appId": os.getenv("FIREBASE_APP_ID"),
         "measurementId": "G-BJXVNHZ404"
     }
     return JSONResponse(config)
-
 
 @app.get("/signup", response_class=HTMLResponse)
 async def signup_page(request: Request):
@@ -82,7 +113,7 @@ async def send_verification(request: Request):
     code = generate_verification_code()
     verification_codes[email] = code
     send_verification_email(email, code)
-    print(f"Verification code for {email}: {code}")  # (for debugging)
+    print(f"Verification code for {email}: {code}")# (for debugging)
 
     return JSONResponse({"message": "Verification code sent"})
 
@@ -103,7 +134,7 @@ async def verify_code_submit(request: Request, code: str = Form(...)):
 
     if code == expected_code:
         verification_codes.pop(email, None)
-        return RedirectResponse("/", status_code=303)  # login successful, go home
+        return RedirectResponse("/", status_code=303)# login successful, go home
     else:
         return templates.TemplateResponse("verify-code.html", {
             "request": request,
@@ -129,8 +160,63 @@ async def connect_bank_account(request: Request):
     if not account_holder_name or not account_number:
         return JSONResponse(status_code=400, content={"message": "Missing account holder or account number"})
 
-    account_last4 = account_number[-4:]  # Only store last 4 digits
+    account_last4 = account_number[-4:]
     FirestoreService.save_bank_account_info(user_info['uid'], account_holder_name, account_last4)
 
-
     return JSONResponse(status_code=200, content={"message": "Bank account connected securely."})
+
+# route to transction page
+@app.get("/transaction-page", response_class=HTMLResponse)
+async def transaction_page(request: Request):
+    return templates.TemplateResponse("transaction.html", {"request": request})
+
+@app.get("/transaction-success", response_class=HTMLResponse)
+async def transaction_success_page(request: Request):
+    return templates.TemplateResponse("transaction-success.html", {"request": request})
+
+#to record the transaction
+@app.post("/transaction")
+async def new_transaction(request: Request):
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return RedirectResponse(url="/", status_code=303)
+
+    id_token = auth_header.split(" ")[1]
+    user_info = validate_firebase_token(id_token)
+    
+    if not user_info:
+        return RedirectResponse(url="/", status_code=303)
+
+    user_id = user_info['uid']
+
+    data = await request.json()
+    amount = data.get('amount')
+
+    if amount is None:
+        return JSONResponse({"error": "Missing amount"}, status_code=400)
+
+    transaction_info = {
+        "user_id": user_id,
+        "amount": amount
+    }
+
+    if amount > 100:
+        notify_all_users(transaction_info)
+
+    FirestoreService.save_transaction(user_id, amount)
+
+    return JSONResponse({"message": "Transaction recorded successfully."})
+
+# to save user
+@app.post("/save-user")
+async def save_user(request: Request):
+    data = await request.json()
+    user_id = data.get("user_id")
+    email = data.get("email")
+    name = data.get("name")
+
+    if not user_id or not email:
+        return JSONResponse({"error": "Missing user information"}, status_code=400)
+
+    FirestoreService.save_user(user_id, email, name)
+    return JSONResponse({"message": "User saved successfully"})

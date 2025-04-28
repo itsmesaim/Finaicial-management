@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Verify Code | Financial Management</title>
   <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
   <style>
@@ -35,10 +35,20 @@
   <div class="verify-container text-center">
     <h4 class="mb-4">Verify Your Email</h4>
     <p class="text-muted mb-4">Enter the 6-digit code sent to your email.</p>
+
     <form action="/verify-code" method="post">
-      <input type="text" name="code" maxlength="6" minlength="6" required class="form-control mb-3" placeholder="------" />
+      <input 
+        type="text" 
+        name="code" 
+        maxlength="6" 
+        minlength="6" 
+        required 
+        class="form-control mb-3" 
+        placeholder="------" 
+      />
       <button type="submit" class="btn btn-primary w-100">Verify</button>
     </form>
+
   </div>
 
 </body>
