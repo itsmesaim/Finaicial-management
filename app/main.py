@@ -111,6 +111,19 @@ async def verify_code_submit(request: Request, code: str = Form(...)):
         })
 #connecting bank account route
 
+@app.get("/connect-bank-account", response_class=HTMLResponse)
+async def connect_bank_account_page(request: Request):
+    id_token = request.cookies.get("token")
+    user_token = validate_firebase_token(id_token)
+    
+    if not user_token:
+        return RedirectResponse("/", status_code=303)
+    
+    return templates.TemplateResponse("connect-bank-account.html", {
+        "request": request,
+        "user_token": id_token 
+    })
+
 @app.post("/connect-bank-account")
 async def connect_bank_account(request: Request):
     auth_header = request.headers.get('Authorization')
@@ -130,7 +143,8 @@ async def connect_bank_account(request: Request):
         return JSONResponse(status_code=400, content={"message": "Missing account holder or account number"})
 
     account_last4 = account_number[-4:]  # Only store last 4 digits
-    FirestoreService.save_bank_account_info(user_info['uid'], account_holder_name, account_last4)
+    user_id = user_info.get('uid') or user_info.get('user_id') or user_info.get('sub')
+    FirestoreService.save_bank_account_info(user_id, account_holder_name, account_last4)
 
 
     return JSONResponse(status_code=200, content={"message": "Bank account connected securely."})
