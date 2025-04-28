@@ -17,14 +17,15 @@ class FirestoreService:
         return firestore_db.collection("users").document(user_id).set(user_data)
 
     @staticmethod
-    def get_user(user_id: str):
-        user_ref = firestore_db.collection("users").document(user_id)
-        user = user_ref.get()
-        if user.exists:
-            data = user.to_dict()
-            data["id"] = user_id
-            return data
+    def get_user(user_id):
+        from google.cloud import firestore
+        db = firestore.Client()
+        user_ref = db.collection('users').document(user_id)
+        doc = user_ref.get()
+        if doc.exists:
+            return doc.to_dict()
         return None
+
     #to save the bank information
     @staticmethod
     def save_bank_account_info(uid, account_holder_name, account_last4):
@@ -35,3 +36,36 @@ class FirestoreService:
             'created_at': datetime.utcnow()
         }
         return firestore_db.collection('bank_accounts').document(uid).set(bank_data)
+    
+    @staticmethod
+    def get_all_users():
+        from google.cloud import firestore
+        db = firestore.Client()
+        users_ref = db.collection('users')
+        docs = users_ref.stream()
+        all_users = []
+        for doc in docs:
+            all_users.append(doc.to_dict())
+        return all_users
+
+    @staticmethod
+    def save_transaction(user_id, amount):
+        from google.cloud import firestore
+        db = firestore.Client()
+        transactions_ref = db.collection('transactions')
+        transactions_ref.add({
+            "user_id": user_id,
+            "amount": amount,
+            "timestamp": firestore.SERVER_TIMESTAMP
+        })
+
+    @staticmethod
+    def save_user(user_id, email, name):
+        from google.cloud import firestore
+        db = firestore.Client()
+        user_ref = db.collection('users').document(user_id)
+        user_ref.set({
+            "email": email,
+            "name": name,
+            "uid": user_id
+        })
