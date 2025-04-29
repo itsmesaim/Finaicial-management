@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overspending Alerts</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <nav class="navbar">
+            <div class="logo">💰</div>
+            <ul class="nav-links">
+                <li><a class="active" href="#">Dashboard</a></li>
+                <li><a href="#">Transactions</a></li>
+                <li><a href="#">Bank Connection</a></li>
+                <li><a href="#">Overspending Alerts</a></li>
+                <li><a href="#">User Roles and Permissions</a></li>
+            </ul>
+            <button class="logout">Logout</button>
+        </nav>
+
+        <section class="alerts">
+            <h2>Overspending Alerts</h2>
+            <p>Receive notifications when you exceed your set budget limits.</p>
+            <button class="add-alert" onclick="location.href='budget-warnings.html';">Add Alert</button>
+
+            <div class="budgets">
+                <div class="budget-card">
+                    <div class="budget-header">
+                        <h3>Budget 1</h3>
+                        <button class="edit-alert">Edit Alert</button>
+                    </div>
+                    <p><strong>Budget name:</strong> abcdef</p>
+                    <p><strong>Budget spent:</strong> 40%</p>
+                    <p><strong>Amount spent:</strong> £30</p>
+                    <p><strong>Budget limit:</strong> £300</p>
+                </div>
+                <div class="budget-card">
+                    <div class="budget-header">
+                        <h3>Budget 2</h3>
+                        <button class="edit-alert">Edit Alert</button>
+                    </div>
+                    <p><strong>Budget name:</strong> Dummy</p>
+                    <p><strong>Budget spent:</strong> 50%</p>
+                    <p><strong>Amount spent:</strong> £150</p>
+                    <p><strong>Budget limit:</strong> £300</p>
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
