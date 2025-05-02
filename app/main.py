@@ -220,3 +220,14 @@ async def save_user(request: Request):
 
     FirestoreService.save_user(user_id, email, name)
     return JSONResponse({"message": "User saved successfully"})
+
+# route to budget-analysis page
+@app.get("/budget-analysis", response_class=HTMLResponse)
+async def budget_analysis_page(request: Request):
+    id_token = request.cookies.get("token")
+    user_token = validate_firebase_token(id_token)
+
+    if not user_token:
+        return RedirectResponse("/", status_code=303)
+
+    return templates.TemplateResponse("budget-analysis.html", {"request": request, "user_token": user_token})
