@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request, Form, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from dotenv import load_dotenv
 from fastapi.templating import Jinja2Templates
@@ -238,3 +238,41 @@ async def save_user(request: Request):
 
     FirestoreService.save_user(user_id, email, name)
     return JSONResponse({"message": "User saved successfully"})
+# Create a new overspending alert
+@app.post("/alerts")
+async def create_alert(request: Request, user_token: dict = Depends(validate_firebase_token)):
+    data = await request.json()
+    budget_name = data.get("budget_name")
+    budget_limit = data.get("budget_limit")
+    amount_spent = data.get("amount_spent")
+
+    if not all([budget_name, budget_limit, amount_spent]):
+        return JSONResponse({"error": "Missing alert information"}, status_code=400)
+
+    alert_data = {
+        "budget_name": budget_name,
+        "budget_limit": budget_limit,
+        "amount_spent": amount_spent,
+    }
+    user_id = user_token.get("uid")
+    FirestoreService.save_alert(user_id, alert_data)
+
+    return JSONResponse({"message": "Alert created successfully."})
+
+# Fetch all overspending alerts for a user
+@app.get("/alerts")
+async def get_alerts(user_token: dict = Depends(validate_firebase_token)):
+    user_id = user_token.get("uid")
+    alerts = FirestoreService.get_user_alerts(user_id)
+    return alerts
+
+# Delete an overspending alert
+@app.delete("/alerts/{alert_id}")
+async def delete_alert(alert_id: str, user_token: dict = Depends(validate_firebase_token)):
+    user_id = user_token.get("uid")
+    success = FirestoreService.delete_alert(user_id, alert_id)
+
+    if not success:
+        return JSONResponse({"error": "Alert not found"}, status_code=404)
+
+    return JSONResponse({"message": "Alert deleted successfully."})

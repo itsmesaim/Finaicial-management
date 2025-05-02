@@ -50,5 +50,51 @@
             </div>
         </section>
     </div>
+    <script>
+        async function fetchAlerts() {
+            try {
+                const response = await fetch('/alerts', { method: 'GET', credentials: 'include' });
+                const alerts = await response.json();
+                console.log(alerts);
+                renderAlerts(alerts);
+            } catch (error) {
+                console.error('Error fetching alerts:', error);
+            }
+        }
+        
+        function renderAlerts(alerts) {
+            const budgetsContainer = document.querySelector('.budgets');
+            budgetsContainer.innerHTML = '';
+        
+            alerts.forEach(alert => {
+                const card = document.createElement('div');
+                card.className = 'budget-card';
+                card.innerHTML = `
+                    <div class="budget-header">
+                        <h3>${alert.budget_name}</h3>
+                        <button class="edit-alert" onclick="deleteAlert('${alert.alert_id}')">Delete Alert</button>
+                    </div>
+                    <p><strong>Budget spent:</strong> ${(alert.amount_spent / alert.budget_limit * 100).toFixed(2)}%</p>
+                    <p><strong>Amount spent:</strong> £${alert.amount_spent}</p>
+                    <p><strong>Budget limit:</strong> £${alert.budget_limit}</p>
+                `;
+                budgetsContainer.appendChild(card);
+            });
+        }
+        
+        async function deleteAlert(alertId) {
+            if (!confirm('Are you sure you want to delete this alert?')) return;
+        
+            try {
+                await fetch(`/alerts/${alertId}`, { method: 'DELETE', credentials: 'include' });
+                fetchAlerts(); // Reload alerts
+            } catch (error) {
+                console.error('Error deleting alert:', error);
+            }
+        }
+        
+        // Call fetchAlerts when the page loads
+        document.addEventListener('DOMContentLoaded', fetchAlerts);
+        </script>
 </body>
 </html>
