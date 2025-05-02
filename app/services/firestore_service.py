@@ -69,3 +69,6 @@ class FirestoreService:
             "name": name,
             "uid": user_id
         })
+    @staticmethod
+    #def add_event_budget():
+    #def get_event_budgets(user_id):

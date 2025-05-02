@@ -238,3 +238,5 @@ async def save_user(request: Request):
 
     FirestoreService.save_user(user_id, email, name)
     return JSONResponse({"message": "User saved successfully"})
+#@app.route('/create-budget', methods=['GET', 'POST'])
+#def create_budget():
