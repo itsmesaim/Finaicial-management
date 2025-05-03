@@ -141,3 +141,44 @@ class BudgetRecommendationService:
             "created_at": firestore.SERVER_TIMESTAMP
         }
         return firestore_db.collection('financial_goals').add(goal_data)
+
+
+@app.get("/graph-data/summary")
+async def get_graph_summary(request: Request):
+    """Returns summary data for graphs (e.g., pie or bar chart)."""
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return JSONResponse(status_code=401, content={"message": "Authorization header missing or invalid"})
+
+    id_token = auth_header.split(" ")[1]
+    user_info = validate_firebase_token(id_token)
+    if not user_info:
+        return JSONResponse(status_code=401, content={"message": "Invalid or expired token"})
+
+    user_id = user_info["uid"]
+    transactions = BudgetRecommendationService.get_transactions(user_id)
+
+    summary = {
+        "income": 0.0,
+        "expense": 0.0,
+        "labels": [],
+        "values": []
+    }
+
+    category_totals = {}
+
+    for tx in transactions:
+        amount = float(tx.get("amount", 0))
+        tx_type = tx.get("type")
+        category = tx.get("category", "Uncategorized")
+
+        if tx_type == "income":
+            summary["income"] += amount
+        elif tx_type == "expense":
+            summary["expense"] += amount
+            category_totals[category] = category_totals.get(category, 0) + amount
+
+    summary["labels"] = list(category_totals.keys())
+    summary["values"] = list(category_totals.values())
+
+    return JSONResponse(content=summary)
