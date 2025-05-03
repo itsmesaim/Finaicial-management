@@ -276,3 +276,24 @@ async def delete_alert(alert_id: str, user_token: dict = Depends(validate_fireba
         return JSONResponse({"error": "Alert not found"}, status_code=404)
 
     return JSONResponse({"message": "Alert deleted successfully."})
+
+
+#  predictive insights logic
+@app.get("/predictive-insights")
+async def get_predictive_insights(user_token: dict = Depends(validate_firebase_token)):
+    user_id = user_token.get("uid")
+
+    # Simulated insights - in real scenario, you'd run ML models or statistical analysis
+    Predictive_insights = {
+        "user_id": user_id,
+        "monthly_spending_forecast": 245.75,
+        "likely_budget_exceed": True,
+        "suggested_savings": 50.00,
+        "next_high_expense_category": "Dining",
+        "alerts": [
+            "Spending on Dining is trending 20% higher than last month.",
+            "You are on track to exceed your budget for 'Entertainment'."
+        ]
+    }
+
+    return JSONResponse(Predictive_insights)
