@@ -23,6 +23,7 @@ from email.message import EmailMessage
 app = FastAPI()
 load_dotenv()
 
+
 # Static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
@@ -388,6 +389,11 @@ async def delete_alert(alert_id: str, user_token: dict = Depends(validate_fireba
     return JSONResponse({"message": "Alert deleted successfully."})
 
 
+@app.get("/personalized-financial-suggestion", response_class=HTMLResponse)
+async def pfg_page(request: Request):
+    return templates.TemplateResponse("personalized-financial-suggestion.html", {"request": request})
+
+
 
 
 #  predictive insights logic
@@ -409,4 +415,3 @@ async def get_predictive_insights(user_token: dict = Depends(validate_firebase_t
     }
 
     return JSONResponse(Predictive_insights)
-
