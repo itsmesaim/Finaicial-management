@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Verify Code | Financial Management</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: "Segoe UI", sans-serif;
+    }
+    .verify-container {
+      max-width: 500px;
+      margin: 100px auto;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.05);
+      padding: 40px;
+    }
+    .form-control {
+      border-radius: 6px;
+      text-align: center;
+      letter-spacing: 5px;
+      font-size: 24px;
+    }
+    .btn-primary {
+      background-color: #4f46e5;
+      border-color: #4f46e5;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="verify-container text-center">
+    <h4 class="mb-4">Verify Your Email</h4>
+    <p class="text-muted mb-4">Enter the 6-digit code sent to your email.</p>
+
+    <form action="/verify-code" method="post">
+      <input 
+        type="text" 
+        name="code" 
+        maxlength="6" 
+        minlength="6" 
+        required 
+        class="form-control mb-3" 
+        placeholder="------" 
+      />
+      <button type="submit" class="btn btn-primary w-100">Verify</button>
+    </form>
+
+  </div>
+
+</body>
+</html>
