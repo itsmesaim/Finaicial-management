@@ -305,6 +305,31 @@ async def save_user(request: Request):
 
     FirestoreService.save_user(user_id, email, name)
     return JSONResponse({"message": "User saved successfully"})
+
+
+# route to budget-analysis page
+@app.get("/budget-analysis", response_class=HTMLResponse)
+async def budget_analysis_page(request: Request):
+    id_token = request.cookies.get("token")
+    user_token = validate_firebase_token(id_token)
+
+    if not user_token:
+        return RedirectResponse("/", status_code=303)
+
+    return templates.TemplateResponse("budget-analysis.html", {"request": request, "user_token": user_token})
+
+
+# route to Personalized-Financial-Suggestions page
+@app.get("/personalized-financial", response_class=HTMLResponse)
+async def budget_analysis_page(request: Request):
+    id_token = request.cookies.get("token")
+    user_token = validate_firebase_token(id_token)
+
+    if not user_token:
+        return RedirectResponse("/", status_code=303)
+
+    return templates.TemplateResponse("Personalized-Financial-Suggestions.html", {"request": request, "user_token": user_token})
+
 # Create a new overspending alert
 @app.post("/alerts")
 async def create_alert(request: Request, user_token: dict = Depends(validate_firebase_token)):
@@ -343,6 +368,7 @@ async def delete_alert(alert_id: str, user_token: dict = Depends(validate_fireba
         return JSONResponse({"error": "Alert not found"}, status_code=404)
 
     return JSONResponse({"message": "Alert deleted successfully."})
+
 
 
 
