@@ -220,3 +220,22 @@ async def save_user(request: Request):
 
     FirestoreService.save_user(user_id, email, name)
     return JSONResponse({"message": "User saved successfully"})
+
+
+# app/services/categorization_service.py
+
+def categorize_expense(description: str) -> str:
+    description = description.lower()
+    
+    if "uber" in description or "taxi" in description:
+        return "Transportation"
+    elif "coffee" in description or "starbucks" in description:
+        return "Food & Beverage"
+    elif "grocery" in description or "walmart" in description:
+        return "Groceries"
+    elif "netflix" in description or "spotify" in description:
+        return "Entertainment"
+    elif "rent" in description or "apartment" in description:
+        return "Housing"
+    else:
+        return "Other"
