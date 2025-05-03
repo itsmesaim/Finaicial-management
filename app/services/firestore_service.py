@@ -35,3 +35,5 @@ class FirestoreService:
             'created_at': datetime.utcnow()
         }
         return firestore_db.collection('bank_accounts').document(uid).set(bank_data)
+    
+
