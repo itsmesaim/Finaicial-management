@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Automatic Expense Categorization</title>
+</head>
+<body>
+
+  <h2>Automatic Expense Categorization</h2>
+
+  <form action="/categorize-expense" method="POST">
+    <label for="description">Expense Description:</label><br>
+    <input type="text" id="description" name="description" placeholder="e.g. Coffee at Starbucks"><br><br>
+
+    <label for="amount">Amount ($):</label><br>
+    <input type="number" id="amount" name="amount" placeholder="e.g. 4.50"><br><br>
+
+    <input type="submit" value="Categorize Expense">
+  </form>
+
+</body>
+</html>
