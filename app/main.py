@@ -13,6 +13,7 @@ from email.message import EmailMessage
 app = FastAPI()
 load_dotenv()
 
+
 # Static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
@@ -276,3 +277,7 @@ async def delete_alert(alert_id: str, user_token: dict = Depends(validate_fireba
         return JSONResponse({"error": "Alert not found"}, status_code=404)
 
     return JSONResponse({"message": "Alert deleted successfully."})
+
+@app.get("/personalized-financial-suggestion", response_class=HTMLResponse)
+async def pfg_page(request: Request):
+    return templates.TemplateResponse("personalized-financial-suggestion.html", {"request": request})
