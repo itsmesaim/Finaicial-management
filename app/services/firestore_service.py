@@ -37,6 +37,9 @@ class FirestoreService:
         }
         return firestore_db.collection('bank_accounts').document(uid).set(bank_data)
     
+
+
+
     @staticmethod
     def get_all_users():
         from google.cloud import firestore
