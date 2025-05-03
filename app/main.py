@@ -307,6 +307,24 @@ async def save_user(request: Request):
     return JSONResponse({"message": "User saved successfully"})
 
 
+# app/services/categorization_service.py
+
+def categorize_expense(description: str) -> str:
+    description = description.lower()
+    
+    if "uber" in description or "taxi" in description:
+        return "Transportation"
+    elif "coffee" in description or "starbucks" in description:
+        return "Food & Beverage"
+    elif "grocery" in description or "walmart" in description:
+        return "Groceries"
+    elif "netflix" in description or "spotify" in description:
+        return "Entertainment"
+    elif "rent" in description or "apartment" in description:
+        return "Housing"
+    else:
+        return "Other"
+
 # route to budget-analysis page
 @app.get("/budget-analysis", response_class=HTMLResponse)
 async def budget_analysis_page(request: Request):
@@ -391,3 +409,4 @@ async def get_predictive_insights(user_token: dict = Depends(validate_firebase_t
     }
 
     return JSONResponse(Predictive_insights)
+
