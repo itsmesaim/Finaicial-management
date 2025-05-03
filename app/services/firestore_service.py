@@ -37,6 +37,9 @@ class FirestoreService:
         }
         return firestore_db.collection('bank_accounts').document(uid).set(bank_data)
     
+
+
+
     @staticmethod
     def get_all_users():
         from google.cloud import firestore
@@ -69,6 +72,11 @@ class FirestoreService:
             "name": name,
             "uid": user_id
         })
+
+    @staticmethod
+    #def add_event_budget():
+    #def get_event_budgets(user_id):
+
     # To Save a new overspending alert.
     @staticmethod
     def save_alert(user_id, alert_data):
@@ -102,3 +110,4 @@ class FirestoreService:
             alert_ref.delete()
             return True
         return False
+
