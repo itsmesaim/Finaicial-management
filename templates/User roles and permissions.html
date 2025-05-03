@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Management Panel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9fafa;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .button-group a {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background-color: #e0e7ff;
+      color: #1e3a8a;
+      font-weight: bold;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .button-group a:hover {
+      background-color: #1e3a8a;
+      color: white;
+    }
+
+    .home-screen {
+      display: none;
+      width: 100%;
+      max-width: 1000px;
+      margin-bottom: 20px;
+      background: none;
+      border-radius: 0;
+      padding: 0;
+      box-shadow: none;
+    }
+
+    .content {
+      display: none;
+      width: 100%;
+      max-width: 1000px;
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+
+    body:not(:has(:target)) .home-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #user-management:target,
+    #role-assignment:target,
+    #audit-trail:target {
+      display: block;
+    }
+
+    body:has(#user-management:target) .home-screen,
+    body:has(#role-assignment:target) .home-screen,
+    body:has(#audit-trail:target) .home-screen {
+      display: none;
+    }
+
+    .back-home-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      background-color: #f87171;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: background-color 0.3s;
+    }
+
+    .back-home-btn:hover {
+      background-color: #ef4444;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    th {
+      font-weight: bold;
+      color: #374151;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .status-toggle {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 20px;
+    }
+
+    .status-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 20px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    .status-toggle input:checked + .slider {
+      background-color: #10b981;
+    }
+
+    .status-toggle input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 20px;
+      gap: 10px;
+    }
+
+    .pagination button {
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: white;
+      cursor: pointer;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    select, textarea, input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 16px;
+      background-color: #f9fafb;
+      outline: none;
+    }
+
+    textarea {
+      height: 100px;
+      resize: none;
+    }
+
+    .button-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .cancel-btn, .save-changes-btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .cancel-btn {
+      background: white;
+      color: #374151;
+      border: 1px solid #d1d5db;
+    }
+
+    .save-changes-btn {
+      background: #2563eb;
+      color: white;
+      border: none;
+    }
+
+    .save-changes-btn:hover {
+      background: #1d4ed8;
+    }
+
+    .audit-filters {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .audit-filters select {
+      width: 200px;
+    }
+
+    .apply-btn {
+      padding: 10px 20px;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      align-self: end;
+    }
+
+    .apply-btn:hover {
+      background-color: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>User Roles and Permissions</h1>
+  
+  <div class="home-screen">
+    <div class="button-group">
+      <a href="#user-management">User Management</a>
+      <a href="#role-assignment">Role Assignment</a>
+      <a href="#audit-trail">Audit Trail</a>
+    </div>
+  </div>
+
+  <!-- User Management -->
+  <div class="content" id="user-management">
+    <h2>User Management</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Role</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="user-info">
+            <div>
+              <div>ABC</div>
+              <small>abc@example.com</small>
+            </div>
+          </td>
+          <td>
+            <select>
+              <option>Admin</option>
+              <option>Editor</option>
+              <option>Viewer</option>
+            </select>
+          </td>
+          <td>
+            <label class="status-toggle">
+              <input type="checkbox" checked>
+              <span class="slider"></span>
+            </label>
+          </td>
+          <td><button class="save-changes-btn">Save</button></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="pagination">
+      <button>Previous</button>
+      <button>1</button>
+      <button>Next</button>
+    </div>
+    <a href="#" class="back-home-btn">Back Home</a>
+  </div>
+
+  <!-- Role Assignment -->
+  <div class="content" id="role-assignment">
+    <h2>Role Assignment</h2>
+    <div class="form-group">
+      <label>Select Role</label>
+      <select id="role-select">
+        <option value="Admin">Admin</option>
+        <option value="Editor">Editor</option>
+        <option value="Viewer">Viewer</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Permissions</label>
+      <textarea id="permissions-textarea" readonly>Admin - Full Control</textarea>
+    </div>
+    <div class="button-actions">
+      <button class="cancel-btn">Cancel</button>
+      <button class="save-changes-btn">Save Changes</button>
+    </div>
+    <a href="#" class="back-home-btn">Back Home</a>
+  </div>
+
+  <!-- Audit Trail -->
+  <div class="content" id="audit-trail">
+    <h2>Audit Trail</h2>
+    <div class="audit-filters">
+      <div>
+        <label>User</label>
+        <select>
+          <option>All Users</option>
+          <option>A</option>
+          <option>B</option>
+          <option>C</option>
+        </select>
+      </div>
+      <div>
+        <label>Date Range</label>
+        <select>
+          <option>Last 30 Days</option>
+          <option>Last 90 Days</option>
+        </select>
+      </div>
+      <button class="apply-btn">Apply</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Action</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>A</td>
+          <td>Changed role from Editor to Admin.</td>
+          <td>Apr 13, 2025 09:30 AM</td>
+        </tr>
+        <tr>
+          <td>B</td>
+          <td>Deactivated the account</td>
+          <td>Apr 18, 2025 03:50 PM</td>
+        </tr>
+      </tbody>
+    </table>
+    <a href="#" class="back-home-btn">Back Home</a>
+  </div>
+
+  <script>
+    const roleSelect = document.getElementById('role-select');
+    const permissionsTextarea = document.getElementById('permissions-textarea');
+
+    roleSelect.addEventListener('change', () => {
+      const selectedRole = roleSelect.value;
+      if (selectedRole === 'Admin') {
+        permissionsTextarea.value = 'Admin - Full Control';
+      } else if (selectedRole === 'Editor') {
+        permissionsTextarea.value = 'Editor - Modify Data';
+      } else if (selectedRole === 'Viewer') {
+        permissionsTextarea.value = 'Viewer - Read Only';
+      }
+    });
+  </script>
+</body>
+</html>

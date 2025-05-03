@@ -1,4 +1,7 @@
+
+from difflib import restore
 from fastapi import FastAPI, Request, Form
+from fastapi import FastAPI, Request, Form, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from dotenv import load_dotenv
 from fastapi.templating import Jinja2Templates
@@ -6,6 +9,13 @@ from fastapi.staticfiles import StaticFiles
 from app.auth.authentication import validate_firebase_token
 from app.services.firestore_service import FirestoreService
 import os
+
+from dotenv import load_dotenv
+from datetime import datetime
+
+from google.cloud import firestore
+
+firestore_db = restore.Client()
 import random
 import smtplib
 from email.message import EmailMessage
@@ -142,6 +152,19 @@ async def verify_code_submit(request: Request, code: str = Form(...)):
         })
 #connecting bank account route
 
+@app.get("/connect-bank-account", response_class=HTMLResponse)
+async def connect_bank_account_page(request: Request):
+    id_token = request.cookies.get("token")
+    user_token = validate_firebase_token(id_token)
+    
+    if not user_token:
+        return RedirectResponse("/", status_code=303)
+    
+    return templates.TemplateResponse("connect-bank-account.html", {
+        "request": request,
+        "user_token": id_token 
+    })
+
 @app.post("/connect-bank-account")
 async def connect_bank_account(request: Request):
     auth_header = request.headers.get('Authorization')
@@ -160,10 +183,72 @@ async def connect_bank_account(request: Request):
     if not account_holder_name or not account_number:
         return JSONResponse(status_code=400, content={"message": "Missing account holder or account number"})
 
+    account_last4 = account_number[-4:]  # Only store last 4 digits
+    user_id = user_info.get('uid') or user_info.get('user_id') or user_info.get('sub')
+    FirestoreService.save_bank_account_info(user_id, account_holder_name, account_last4)
+
     account_last4 = account_number[-4:]
     FirestoreService.save_bank_account_info(user_info['uid'], account_holder_name, account_last4)
 
+
     return JSONResponse(status_code=200, content={"message": "Bank account connected securely."})
+
+
+
+
+
+class BudgetRecommendationService:
+    @staticmethod
+    def get_transactions(user_id: str):
+        """Fetch all transactions for the given user."""
+        try:
+            transactions_ref = firestore_db.collection("transactions").where("user_id", "==", user_id)
+            transactions = transactions_ref.stream()
+            return [t.to_dict() for t in transactions]
+        except Exception as e:
+            print(f"Error fetching transactions: {e}")
+            return []
+
+    @staticmethod
+    def calculate_expenses_and_income(user_id: str):
+        """Calculate the total expenses and income for the user."""
+        transactions = BudgetRecommendationService.get_transactions(user_id)
+        total_expenses = 0
+        total_income = 0
+
+        for transaction in transactions:
+            amount = float(transaction.get("amount", 0))
+            if transaction.get("type") == "expense":
+                total_expenses += amount
+            elif transaction.get("type") == "income":
+                total_income += amount
+        
+        return total_income, total_expenses
+
+    @staticmethod
+    def recommend_budget(user_id: str):
+        """Provide budget recommendations based on user's income and expenses."""
+        total_income, total_expenses = BudgetRecommendationService.calculate_expenses_and_income(user_id)
+
+        savings_goal = 0.2 * total_income  # Save 20% of income
+
+        if total_expenses > total_income:
+            return f"Your expenses are higher than your income. Try cutting down on discretionary expenses. Aim to save at least {savings_goal:.2f}."
+        elif total_expenses > total_income * 0.8:
+            return f"You're spending about 80% of your income. Consider saving {savings_goal:.2f} or adjusting your budget."
+        else:
+            return f"Your spending seems healthy. Keep it up! Aim for a saving goal of {savings_goal:.2f}."
+
+    @staticmethod
+    def set_financial_goal(user_id: str, goal_name: str, target_amount: float):
+        """Set a financial goal for the user."""
+        goal_data = {
+            "goal_name": goal_name,
+            "target_amount": target_amount,
+            "user_id": user_id,
+            "created_at": firestore.SERVER_TIMESTAMP
+        }
+        return firestore_db.collection('financial_goals').add(goal_data)
 
 # route to transction page
 @app.get("/transaction-page", response_class=HTMLResponse)
@@ -221,6 +306,7 @@ async def save_user(request: Request):
     FirestoreService.save_user(user_id, email, name)
     return JSONResponse({"message": "User saved successfully"})
 
+
 # route to budget-analysis page
 @app.get("/budget-analysis", response_class=HTMLResponse)
 async def budget_analysis_page(request: Request):
@@ -243,3 +329,44 @@ async def budget_analysis_page(request: Request):
         return RedirectResponse("/", status_code=303)
 
     return templates.TemplateResponse("Personalized-Financial-Suggestions.html", {"request": request, "user_token": user_token})
+
+# Create a new overspending alert
+@app.post("/alerts")
+async def create_alert(request: Request, user_token: dict = Depends(validate_firebase_token)):
+    data = await request.json()
+    budget_name = data.get("budget_name")
+    budget_limit = data.get("budget_limit")
+    amount_spent = data.get("amount_spent")
+
+    if not all([budget_name, budget_limit, amount_spent]):
+        return JSONResponse({"error": "Missing alert information"}, status_code=400)
+
+    alert_data = {
+        "budget_name": budget_name,
+        "budget_limit": budget_limit,
+        "amount_spent": amount_spent,
+    }
+    user_id = user_token.get("uid")
+    FirestoreService.save_alert(user_id, alert_data)
+
+    return JSONResponse({"message": "Alert created successfully."})
+
+# Fetch all overspending alerts for a user
+@app.get("/alerts")
+async def get_alerts(user_token: dict = Depends(validate_firebase_token)):
+    user_id = user_token.get("uid")
+    alerts = FirestoreService.get_user_alerts(user_id)
+    return alerts
+
+# Delete an overspending alert
+@app.delete("/alerts/{alert_id}")
+async def delete_alert(alert_id: str, user_token: dict = Depends(validate_firebase_token)):
+    user_id = user_token.get("uid")
+    success = FirestoreService.delete_alert(user_id, alert_id)
+
+    if not success:
+        return JSONResponse({"error": "Alert not found"}, status_code=404)
+
+    return JSONResponse({"message": "Alert deleted successfully."})
+
+
