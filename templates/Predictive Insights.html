@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Predictive Insights</title>
+  <link rel="stylesheet" href="expenditure analysis.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="navbar">
+    <h1>📈 Predictive Insights</h1>
+  </div>
+
+  <div class="dashboard">
+    <div class="chart-card">
+      <h2>Predicted Savings/Deficits</h2>
+      <canvas id="forecastChart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    const forecastCtx = document.getElementById('forecastChart').getContext('2d');
+    new Chart(forecastCtx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+        datasets: [
+          {
+            label: 'Actual Savings',
+            data: [500, 450, 480, 470, 460, null, null, null],
+            borderColor: '#28a745',
+            backgroundColor: 'rgba(40,167,69,0.1)',
+            tension: 0.3,
+            spanGaps: true
+          },
+          {
+            label: 'Forecasted Savings',
+            data: [null, null, null, null, 460, 470, 480, 500],
+            borderDash: [5, 5],
+            borderColor: '#17a2b8',
+            backgroundColor: 'rgba(23,162,184,0.1)',
+            tension: 0.3,
+            spanGaps: true
+          },
+          {
+            label: 'Suggested Cost-Cutting',
+            data: [null, null, null, null, 440, 460, 470, 490],
+            borderDash: [2, 2],
+            borderColor: '#ffc107',
+            backgroundColor: 'rgba(255,193,7,0.1)',
+            tension: 0.3,
+            spanGaps: true
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Future Financial Position and Recommendations'
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false
+          },
+        },
+        interaction: {
+          mode: 'nearest',
+          axis: 'x',
+          intersect: false
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Amount ($)'
+            }
+          }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expenditure Analysis Charts</title>
+  <link rel="stylesheet" href="charts.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="navbar">
+    <h1>📊 Expenditure Dashboard</h1>
+    <div class="view-toggle">
+      <label for="view">View:</label>
+      <select id="view">
+        <option>Monthly</option>
+        <option>Quarterly</option>
+        <option>Annual</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="dashboard">
+    <!-- Pie Chart -->
+    <div class="chart-card">
+      <h2>Spending Breakdown by Category</h2>
+      <canvas id="pieChart"></canvas>
+    </div>
+
+    <!-- Line Chart -->
+    <div class="chart-card">
+      <h2>Spending Patterns Over Time</h2>
+      <canvas id="lineChart"></canvas>
+    </div>
+  </div>
+
+  <script>
+    const pieCtx = document.getElementById('pieChart').getContext('2d');
+    new Chart(pieCtx, {
+      type: 'pie',
+      data: {
+        labels: ['Food', 'Transport', 'Bills', 'Entertainment', 'Savings'],
+        datasets: [{
+          label: 'Spending',
+          data: [300, 150, 200, 100, 250],
+          backgroundColor: ['#ff6384', '#36a2eb', '#ffcd56', '#4bc0c0', '#9966ff'],
+          hoverOffset: 8
+        }]
+      },
+      options: {
+        responsive: true,
+        onClick: (e, items) => {
+          if (items.length > 0) {
+            alert('Show subcategory breakdown for: ' + items[0].element.$context.raw);
+          }
+        }
+      }
+    });
+
+    const lineCtx = document.getElementById('lineChart').getContext('2d');
+    new Chart(lineCtx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+        datasets: [{
+          label: 'Total Spending',
+          data: [500, 700, 600, 800, 750],
+          fill: false,
+          borderColor: '#007bff',
+          tension: 0.1
+        }]
+      },
+      options: {
+        responsive: true
+      }
+    });
+  </script>
+
+</body>
+</html>
