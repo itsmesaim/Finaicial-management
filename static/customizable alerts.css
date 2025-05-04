@@ -1,0 +1,88 @@
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f8;
+    margin: 0;
+    padding: 30px;
+}
+.dashboard {
+    max-width: 900px;
+    margin: auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+h1, h2 {
+    color: #333;
+}
+.summary {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+.card {
+    background: #f0f0f0;
+    padding: 15px;
+    border-radius: 5px;
+    width: 45%;
+}
+.controls {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+}
+.controls button {
+    padding: 10px;
+    background: #ddd;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.alerts, .reminders, .custom-alerts {
+    margin-top: 30px;
+}
+.alert-card {
+    border: 1px solid #ccc;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+.add-alert {
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.reminders ul {
+    list-style: none;
+    padding: 0;
+}
+.reminders li {
+    background: #fffbe6;
+    border-left: 4px solid #ffc107;
+    padding: 10px;
+    margin-bottom: 5px;
+}
+.custom-alerts form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.custom-alerts label {
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+}
+.custom-alerts select, .custom-alerts button {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.custom-alerts button {
+    background-color: #28a745;
+    color: white;
+    cursor: pointer;
+}
