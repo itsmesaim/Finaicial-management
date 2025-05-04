@@ -418,3 +418,15 @@ async def get_predictive_insights(user_token: dict = Depends(validate_firebase_t
     }
 
     return JSONResponse(Predictive_insights)
+
+
+# route for Event Budget Creation
+@app.get("/event-budget", response_class=HTMLResponse)
+async def budget_analysis_page(request: Request):
+    id_token = request.cookies.get("token")
+    user_token = validate_firebase_token(id_token)
+
+    if not user_token:
+        return RedirectResponse("/", status_code=303)
+
+    return templates.TemplateResponse("event-budget.html", {"request": request, "user_token": user_token})
