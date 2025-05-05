@@ -1,5 +1,6 @@
 
-from difflib import restore
+# from difflib import restore
+from google.cloud import firestore
 from fastapi import FastAPI, Request, Form
 from fastapi import FastAPI, Request, Form, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
@@ -15,7 +16,7 @@ from datetime import datetime
 
 from google.cloud import firestore
 
-firestore_db = restore.Client()
+firestore_db = firestore.Client()
 import random
 import smtplib
 from email.message import EmailMessage
@@ -292,6 +293,10 @@ async def new_transaction(request: Request):
     FirestoreService.save_transaction(user_id, amount)
 
     return JSONResponse({"message": "Transaction recorded successfully."})
+
+@app.get("/transaction", response_class=HTMLResponse)
+async def show_transaction_page(request: Request):
+    return templates.TemplateResponse("transaction.html", {"request": request})
 
 # to save user
 @app.post("/save-user")
