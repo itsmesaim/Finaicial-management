@@ -182,3 +182,82 @@ async def get_graph_summary(request: Request):
     summary["values"] = list(category_totals.values())
 
     return JSONResponse(content=summary)
+
+
+@app.post("/event/create")
+async def create_event(request: Request):
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return JSONResponse(status_code=401, content={"message": "Authorization header missing or invalid"})
+
+    id_token = auth_header.split(" ")[1]
+    user_info = validate_firebase_token(id_token)
+    if not user_info:
+        return JSONResponse(status_code=401, content={"message": "Invalid token"})
+
+    data = await request.json()
+    title = data.get("title")
+    description = data.get("description", "")
+    date = data.get("date")  # ISO format expected
+    location = data.get("location", "")
+
+    event_data = {
+        "creator_id": user_info["uid"],
+        "title": title,
+        "description": description,
+        "date": date,
+        "location": location,
+        "collaborators": [user_info["uid"]],
+        "created_at": firestore.SERVER_TIMESTAMP
+    }
+
+    doc_ref = firestore_db.collection("events").add(event_data)
+    return JSONResponse(status_code=201, content={"message": "Event created successfully."})
+
+@app.post("/event/{event_id}/add-collaborator")
+async def add_collaborator(event_id: str, request: Request):
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return JSONResponse(status_code=401, content={"message": "Unauthorized"})
+
+    id_token = auth_header.split(" ")[1]
+    user_info = validate_firebase_token(id_token)
+    if not user_info:
+        return JSONResponse(status_code=401, content={"message": "Invalid token"})
+
+    data = await request.json()
+    collaborator_uid = data.get("user_id")
+
+    event_ref = firestore_db.collection("events").document(event_id)
+    event_doc = event_ref.get()
+
+    if not event_doc.exists:
+        return JSONResponse(status_code=404, content={"message": "Event not found"})
+
+    event_data = event_doc.to_dict()
+    if user_info["uid"] != event_data["creator_id"]:
+        return JSONResponse(status_code=403, content={"message": "Only the creator can add collaborators."})
+
+    if collaborator_uid not in event_data["collaborators"]:
+        event_ref.update({
+            "collaborators": firestore.ArrayUnion([collaborator_uid])
+        })
+
+    return JSONResponse(content={"message": "Collaborator added successfully"})
+
+
+@app.get("/events")
+async def get_user_events(request: Request):
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return JSONResponse(status_code=401, content={"message": "Unauthorized"})
+
+    id_token = auth_header.split(" ")[1]
+    user_info = validate_firebase_token(id_token)
+    if not user_info:
+        return JSONResponse(status_code=401, content={"message": "Invalid token"})
+
+    events_ref = firestore_db.collection("events").where("collaborators", "array_contains", user_info["uid"])
+    events = events_ref.stream()
+
+    return JSONResponse(content=[e.to_dict() for e in events])
