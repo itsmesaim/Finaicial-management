@@ -9,6 +9,8 @@ from app.services.firestore_service import FirestoreService
 import os
 from dotenv import load_dotenv
 from datetime import datetime
+from functools import lru_cache
+import time
 
 from google.cloud import firestore
 
@@ -261,3 +263,26 @@ async def get_user_events(request: Request):
     events = events_ref.stream()
 
     return JSONResponse(content=[e.to_dict() for e in events])
+
+
+@lru_cache(maxsize=128)
+def cached_user_dashboard(uid: str):
+    # Example: simulate summarizing many Firestore reads
+    time.sleep(0.5)  # Simulate processing time
+    return {
+        "welcome": f"Hello {uid}",
+        "summary": "Your financial and activity dashboard is ready."
+    }
+
+@app.get("/dashboard")
+async def get_dashboard(request: Request):
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return JSONResponse(status_code=401, content={"message": "Unauthorized"})
+
+    token = auth_header.split(" ")[1]
+    user = validate_firebase_token(token)
+    if not user:
+        return JSONResponse(status_code=401, content={"message": "Invalid token"})
+
+    return cached_user_dashboard(user["uid"])
