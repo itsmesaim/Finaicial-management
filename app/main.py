@@ -423,3 +423,32 @@ async def get_predictive_insights(user_token: dict = Depends(validate_firebase_t
     }
 
     return JSONResponse(Predictive_insights)
+
+
+# Data encryption and protection code block
+def process_encryption(user_id: str, message: str) -> dict:
+    """
+    Simulates encrypting user data for protection.
+    """
+    from cryptography.fernet import Fernet
+    import uuid
+
+    key = Fernet.generate_key()
+    fernet = Fernet(key)
+    encrypted_message = fernet.encrypt(message.encode())
+
+  
+    encryption_record = {
+        "encryption_id": str(uuid.uuid4()),
+        "user_id": user_id,
+        "original_message": message,
+        "encrypted_message": encrypted_message.decode(),
+        "key": key.decode(),  
+        "message": f"Data encrypted successfully for user {user_id}."
+    }
+
+   
+    print(f"[LOG] Encryption created: {encryption_record}")
+
+    return encryption_record
+

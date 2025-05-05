@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Data Encryption Demo</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 30px; }
+    input, textarea { width: 100%; padding: 10px; margin: 10px 0; }
+    button { padding: 10px 20px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h2>🔐 Data Encryption and Protection</h2>
+
+  <label for="inputData">Enter Plain Text:</label>
+  <textarea id="inputData" rows="4"></textarea>
+
+  <button onclick="encryptData()">Encrypt</button>
+  <button onclick="decryptData()">Decrypt</button>
+
+  <h3>Encrypted Output:</h3>
+  <textarea id="encryptedOutput" rows="4" readonly></textarea>
+
+  <h3>Decrypted Output:</h3>
+  <textarea id="decryptedOutput" rows="4" readonly></textarea>
+
+  <script>
+    let encrypted = "";
+
+    // Simple (dummy) encryption: base64 encoding
+    function encryptData() {
+      const text = document.getElementById("inputData").value;
+      encrypted = btoa(text); // base64 encode
+      document.getElementById("encryptedOutput").value = encrypted;
+      document.getElementById("decryptedOutput").value = "";
+    }
+
+    // Decrypt base64 encoded string
+    function decryptData() {
+      try {
+        const decrypted = atob(encrypted);
+        document.getElementById("decryptedOutput").value = decrypted;
+      } catch (err) {
+        alert("Invalid encrypted data!");
+      }
+    }
+  </script>
+</body>
+</html>
