@@ -423,3 +423,42 @@ async def get_predictive_insights(user_token: dict = Depends(validate_firebase_t
     }
 
     return JSONResponse(Predictive_insights)
+
+# Platform scalability block
+def process_scalability_evaluation(user_id: str, active_users: int, request_rate: float, cpu_load: float) -> dict:
+    """
+    Simulates evaluating platform scalability needs based on current usage metrics.
+    """
+    import uuid
+    from random import randint
+
+    if cpu_load > 0.85 or request_rate > 1000:
+        action = "scale_up"
+        reason = "High CPU or traffic"
+        suggested_instances = randint(5, 10)
+    elif cpu_load < 0.3 and active_users < 100:
+        action = "scale_down"
+        reason = "Low usage"
+        suggested_instances = randint(1, 2)
+    else:
+        action = "no_change"
+        reason = "Stable load"
+        suggested_instances = randint(3, 5)
+
+    
+    scalability_record = {
+        "scaling_evaluation_id": str(uuid.uuid4()),
+        "user_id": user_id,
+        "active_users": active_users,
+        "request_rate": request_rate,
+        "cpu_load": cpu_load,
+        "decision": action,
+        "reason": reason,
+        "suggested_instance_count": suggested_instances,
+        "message": f"Scalability evaluation for user {user_id}: {action.upper()} due to {reason.lower()}."
+    }
+
+   
+    print(f"[LOG] Scalability evaluation result: {scalability_record}")
+
+    return scalability_record
