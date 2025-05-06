@@ -567,6 +567,34 @@ async def get_predictive_insights(user_token: dict = Depends(validate_firebase_t
     return JSONResponse(Predictive_insights)
 
 
+#Settlemet management
+def process_settlement(user_id: str, amount: float, currency: str) -> dict:
+    """
+    Simulates processing a financial settlement for a user.
+    """
+    from random import choice
+    import uuid
+
+    
+    possible_statuses = ["pending", "completed", "failed"]
+    settlement_status = choice(possible_statuses)
+
+   
+    settlement = {
+        "settlement_id": str(uuid.uuid4()),
+        "user_id": user_id,
+        "amount": amount,
+        "currency": currency,
+        "status": settlement_status,
+        "message": f"Settlement {settlement_status} for user {user_id}."
+    }
+
+    
+    print(f"[LOG] Settlement created: {settlement}")
+
+    return settlement
+
+
 @app.get("/event-planning", response_class=HTMLResponse)
 async def event_page(request: Request):
     return templates.TemplateResponse("event-planning.html", {"request": request})
@@ -597,6 +625,7 @@ async def budget_analysis_page(request: Request):
         return RedirectResponse("/", status_code=303)
 
     return templates.TemplateResponse("customizable_alert.html", {"request": request, "user_token": user_token})
+
 
 
 
