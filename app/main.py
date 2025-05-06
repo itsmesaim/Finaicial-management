@@ -1,5 +1,6 @@
 
-from difflib import restore
+# from difflib import restore
+from google.cloud import firestore
 from fastapi import FastAPI, Request, Form
 from fastapi import FastAPI, Request, Form, Depends
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
@@ -17,7 +18,7 @@ import time
 
 from google.cloud import firestore
 
-firestore_db = restore.Client()
+firestore_db = firestore.Client()
 import random
 import smtplib
 from email.message import EmailMessage
@@ -440,6 +441,10 @@ async def new_transaction(request: Request):
 
     return JSONResponse({"message": "Transaction recorded successfully."})
 
+@app.get("/transaction", response_class=HTMLResponse)
+async def show_transaction_page(request: Request):
+    return templates.TemplateResponse("transaction.html", {"request": request})
+
 # to save user
 @app.post("/save-user")
 async def save_user(request: Request):
@@ -567,6 +572,34 @@ async def get_predictive_insights(user_token: dict = Depends(validate_firebase_t
     return JSONResponse(Predictive_insights)
 
 
+
+# Data encryption and protection code block
+def process_encryption(user_id: str, message: str) -> dict:
+    """
+    Simulates encrypting user data for protection.
+    """
+    from cryptography.fernet import Fernet
+    import uuid
+
+    key = Fernet.generate_key()
+    fernet = Fernet(key)
+    encrypted_message = fernet.encrypt(message.encode())
+
+  
+    encryption_record = {
+        "encryption_id": str(uuid.uuid4()),
+        "user_id": user_id,
+        "original_message": message,
+        "encrypted_message": encrypted_message.decode(),
+        "key": key.decode(),  
+        "message": f"Data encrypted successfully for user {user_id}."
+    }
+
+   
+    print(f"[LOG] Encryption created: {encryption_record}")
+
+    return encryption_record
+
 #Settlemet management
 def process_settlement(user_id: str, amount: float, currency: str) -> dict:
     """
@@ -625,6 +658,7 @@ async def budget_analysis_page(request: Request):
         return RedirectResponse("/", status_code=303)
 
     return templates.TemplateResponse("customizable_alert.html", {"request": request, "user_token": user_token})
+
 
 
 
