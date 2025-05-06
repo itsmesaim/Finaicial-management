@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customizable Alerts</title>
+    <link rel="stylesheet" href="customizable alerts.css">
+</head>
+<body>
+    <div class="dashboard">
+        <h1>Financial Alerts Dashboard</h1>
+        <div class="summary">
+            <div class="card">Total Account Balance: <strong>£ 1,232,312.83</strong></div>
+            <div class="card">Total Monthly Spent: <strong>£ 7,844.49</strong></div>
+        </div>
+
+        <div class="controls">
+            <button>Secure Bank Connection</button>
+            <button>Overspending Alerts</button>
+            <button>User Roles & Permissions</button>
+            <button>Notification Settings</button>
+        </div>
+
+        <div class="alerts">
+            <h2>Overspending Alerts</h2>
+            <div class="alert-card">
+                <h3>Budget 1: "Groceries"</h3>
+                <p>Spent: £120 / £300 (40%)</p>
+                <button>Edit Alert</button>
+            </div>
+            <div class="alert-card">
+                <h3>Budget 2: "Entertainment"</h3>
+                <p>Spent: £150 / £300 (50%)</p>
+                <button>Edit Alert</button>
+            </div>
+            <button class="add-alert">+ Add Alert</button>
+        </div>
+
+        <div class="reminders">
+            <h2>Payment Reminders</h2>
+            <ul>
+                <li>Credit Card Payment - £500 due on 10th May</li>
+                <li>Electricity Bill - £85 due on 15th May</li>
+            </ul>
+        </div>
+
+        <div class="custom-alerts">
+            <h2>Custom Alerts Setup</h2>
+            <form>
+                <label>Trigger Condition:
+                    <select>
+                        <option value="over_budget">Over Budget</option>
+                        <option value="bill_due">Bill Due</option>
+                        <option value="large_transaction">Large Transaction</option>
+                    </select>
+                </label>
+                <label>Notification Method:
+                    <select>
+                        <option value="email">Email</option>
+                        <option value="sms">SMS</option>
+                        <option value="push">Push Notification</option>
+                    </select>
+                </label>
+                <label>Frequency:
+                    <select>
+                        <option value="immediate">Immediate</option>
+                        <option value="daily">Daily Summary</option>
+                        <option value="weekly">Weekly Digest</option>
+                    </select>
+                </label>
+                <button type="submit">Set Alert</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

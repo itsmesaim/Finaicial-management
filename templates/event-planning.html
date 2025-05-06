@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collaborative Event Planning - Financial Management</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            font-size: 24px;
+        }
+        
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+        }
+        
+        nav a {
+            color: var(--light-color);
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        nav a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        nav a.active {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        main {
+            padding: 40px 0;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .card-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+        
+        .budget-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+        
+        .stat-card h3 {
+            font-size: 14px;
+            font-weight: 500;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+        
+        .stat-card .value {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .stat-card .trend {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        
+        .trend.up {
+            color: var(--success-color);
+        }
+        
+        .trend.down {
+            color: var(--accent-color);
+        }
+        
+        .expense-list {
+            list-style: none;
+        }
+        
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .expense-item:last-child {
+            border-bottom: none;
+        }
+        
+        .expense-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .expense-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #f1f5f9;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--secondary-color);
+        }
+        
+        .expense-details h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .expense-details p {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        
+        .expense-amount {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .expense-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            width: 30px;
+            height: 30px;
+            border-radius: 4px;
+            border: none;
+            background-color: #f1f5f9;
+            color: var(--dark-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background-color: #e2e8f0;
+        }
+        
+        .chart-container {
+            width: 100%;
+            height: 300px;
+            position: relative;
+        }
+        
+        .sidebar-card {
+            margin-bottom: 20px;
+        }
+        
+        .team-list {
+            list-style: none;
+        }
+        
+        .team-member {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .team-member:last-child {
+            border-bottom: none;
+        }
+        
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .avatar.bg-1 {
+            background-color: #3498db;
+        }
+        
+        .avatar.bg-2 {
+            background-color: #e74c3c;
+        }
+        
+        .avatar.bg-3 {
+            background-color: #2ecc71;
+        }
+        
+        .avatar.bg-4 {
+            background-color: #f39c12;
+        }
+        
+        .member-info h4 {
+            font-size: 16px;
+            margin-bottom: 2px;
+        }
+        
+        .member-info p {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        
+        .progress-container {
+            margin-top: 15px;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: #f1f5f9;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--secondary-color);
+        }
+        
+        .upcoming-item {
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .upcoming-item:last-child {
+            border-bottom: none;
+        }
+        
+        .deadline {
+            font-size: 14px;
+            color: var(--accent-color);
+            margin-bottom: 5px;
+        }
+        
+        .task-info h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+        
+        .assigned-to {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        
+        .assigned-to .avatar {
+            width: 30px;
+            height: 30px;
+            font-size: 12px;
+        }
+        
+        form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        form input, form select, form textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+        
+        form textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #95a5a6;
+            transition: all 0.3s ease;
+        }
+        
+        .close-modal:hover {
+            color: var(--accent-color);
+        }
+        
+        @media (max-width: 900px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            header .container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            nav ul {
+                justify-content: center;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-calendar-check"></i>
+                <h1>EventBudget Pro</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#" class="active">Dashboard</a></li>
+                    <li><a href="#">Budget</a></li>
+                    <li><a href="#">Expenses</a></li>
+                    <li><a href="#">Team</a></li>
+                    <li><a href="#">Reports</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    
+    <main>
+        <div class="container">
+            <h1>Collaborative Event Planning</h1>
+            <p>Corporate Event 2025 - Financial Management Dashboard</p>
+            
+            <div class="budget-overview">
+                <div class="stat-card">
+                    <h3>Total Budget</h3>
+                    <div class="value">$50,000</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Spent</h3>
+                    <div class="value">$24,750</div>
+                    <div class="trend up">
+                        <i class="fas fa-arrow-up"></i> 5% since last week
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h3>Remaining</h3>
+                    <div class="value">$25,250</div>
+                    <div class="trend down">
+                        <i class="fas fa-arrow-down"></i> 5% since last week
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <h3>Budget Status</h3>
+                    <div class="value">49.5%</div>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 49.5%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="dashboard">
+                <div class="main-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Budget Allocation</h2>
+                            <button class="btn btn-primary" id="addCategoryBtn">Add Category</button>
+                        </div>
+                        <div class="chart-container" id="budgetChart"></div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Recent Expenses</h2>
+                            <button class="btn btn-primary" id="addExpenseBtn">Add Expense</button>
+                        </div>
+                        <ul class="expense-list">
+                            <li class="expense-item">
+                                <div class="expense-info">
+                                    <div class="expense-icon">
+                                        <i class="fas fa-utensils"></i>
+                                    </div>
+                                    <div class="expense-details">
+                                        <h4>Catering Deposit</h4>
+                                        <p>Food & Beverages • May 2, 2025</p>
+                                    </div>
+                                </div>
+                                <div class="expense-amount">$8,500</div>
+                                <div class="expense-actions">
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </li>
+                            <li class="expense-item">
+                                <div class="expense-info">
+                                    <div class="expense-icon">
+                                        <i class="fas fa-music"></i>
+                                    </div>
+                                    <div class="expense-details">
+                                        <h4>Live Band</h4>
+                                        <p>Entertainment • May 1, 2025</p>
+                                    </div>
+                                </div>
+                                <div class="expense-amount">$5,000</div>
+                                <div class="expense-actions">
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </li>
+                            <li class="expense-item">
+                                <div class="expense-info">
+                                    <div class="expense-icon">
+                                        <i class="fas fa-building"></i>
+                                    </div>
+                                    <div class="expense-details">
+                                        <h4>Venue Reservation</h4>
+                                        <p>Location • Apr 28, 2025</p>
+                                    </div>
+                                </div>
+                                <div class="expense-amount">$7,500</div>
+                                <div class="expense-actions">
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </li>
+                            <li class="expense-item">
+                                <div class="expense-info">
+                                    <div class="expense-icon">
+                                        <i class="fas fa-camera"></i>
+                                    </div>
+                                    <div class="expense-details">
+                                        <h4>Photography Services</h4>
+                                        <p>Media • Apr 25, 2025</p>
+                                    </div>
+                                </div>
+                                <div class="expense-amount">$3,750</div>
+                                <div class="expense-actions">
+                                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                                    <button class="action-btn"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="sidebar">
+                    <div class="card sidebar-card">
+                        <div class="card-header">
+                            <h2>Team Members</h2>
+                        </div>
+                        <ul class="team-list">
+                            <li class="team-member">
+                                <div class="avatar bg-1">JD</div>
+                                <div class="member-info">
+                                    <h4>Jane Doe</h4>
+                                    <p>Event Manager</p>
+                                </div>
+                            </li>
+                            <li class="team-member">
+                                <div class="avatar bg-2">JS</div>
+                                <div class="member-info">
+                                    <h4>John Smith</h4>
+                                    <p>Financial Coordinator</p>
+                                </div>
+                            </li>
+                            <li class="team-member">
+                                <div class="avatar bg-3">AT</div>
+                                <div class="member-info">
+                                    <h4>Alex Thompson</h4>
+                                    <p>Venue Coordinator</p>
+                                </div>
+                            </li>
+                            <li class="team-member">
+                                <div class="avatar bg-4">MR</div>
+                                <div class="member-info">
+                                    <h4>Maria Rodriguez</h4>
+                                    <p>Marketing Lead</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card sidebar-card">
+                        <div class="card-header">
+                            <h2>Upcoming Tasks</h2>
+                        </div>
+                        <div class="upcoming-item">
+                            <div class="deadline">Due in 2 days</div>
+                            <div class="task-info">
+                                <h4>Finalize AV Equipment Order</h4>
+                                <div class="progress-container">
+                                    <div class="progress-label">
+                                        <span>Progress</span>
+                                        <span>70%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress" style="width: 70%; background-color: #2ecc71;"></div>
+                                    </div>
+                                </div>
+                                <div class="assigned-to">
+                                    <div class="avatar bg-1">JD</div>
+                                    <div class="avatar bg-3">AT</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="upcoming-item">
+                            <div class="deadline">Due tomorrow</div>
+                            <div class="task-info">
+                                <h4>Budget Review Meeting</h4>
+                                <div class="progress-container">
+                                    <div class="progress-label">
+                                        <span>Progress</span>
+                                        <span>50%</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div class="progress" style="width: 50%; background-color: #f39c12;"></div>
+                                    </div>
+                                </div>
+                                <div class="assigned-to">
+                                    <div class="avatar bg-2">JS</div>
+                                    <div class="avatar bg-1">JD</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <div class="modal" id="expenseModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Expense</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="expenseForm">
+                <label for="expenseName">Expense Title</label>
+                <input type="text" id="expenseName" placeholder="Enter expense title" required>
+                
+                <label for="expenseCategory">Category</label>
+                <select id="expenseCategory" required>
+                    <option value="">Select a category</option>
+                    <option value="venue">Venue</option>
+                    <option value="catering">Food & Beverages</option>
+                    <option value="entertainment">Entertainment</option>
+                    <option value="marketing">Marketing</option>
+                    <option value="decoration">Decoration</option>
+                    <option value="media">Media</option>
+                    <option value="staff">Staff</option>
+                    <option value="other">Other</option>
+                </select>
+                
+                <label for="expenseAmount">Amount ($)</label>
+                <input type="number" id="expenseAmount" min="0" step="0.01" placeholder="0.00" required>
+                
+                <label for="expenseDate">Date</label>
+                <input type="date" id="expenseDate" required>
+                
+                <label for="expenseDescription">Description</label>
+                <textarea id="expenseDescription" placeholder="Additional details about this expense"></textarea>
+                
+                <div class="form-footer">
+                    <button type="button" class="btn btn-warning" id="cancelExpenseBtn">Cancel</button>
+                    <button type="submit" class="btn btn-success">Save Expense</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        // DOM Elements
+        const addExpenseBtn = document.getElementById('addExpenseBtn');
+        const expenseModal = document.getElementById('expenseModal');
+        const closeModal = document.querySelector('.close-modal');
+        const cancelExpenseBtn = document.getElementById('cancelExpenseBtn');
+        const expenseForm = document.getElementById('expenseForm');
+        
+        // Event Listeners
+        addExpenseBtn.addEventListener('click', () => {
+            expenseModal.style.display = 'flex';
+        });
+        
+        function closeExpenseModal() {
+            expenseModal.style.display = 'none';
+            expenseForm.reset();
+        }
+        
+        closeModal.addEventListener('click', closeExpenseModal);
+        cancelExpenseBtn.addEventListener('click', closeExpenseModal);
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === expenseModal) {
+                closeExpenseModal();
+            }
+        });
+        
+        // Handle form submission
+        expenseForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Get form values
+            const name = document.getElementById('expenseName').value;
+            const category = document.getElementById('expenseCategory').value;
+            const amount = document.getElementById('expenseAmount').value;
+            const date = document.getElementById('expenseDate').value;
+            const description = document.getElementById('expenseDescription').value;
+            
+            // Here you would typically send this data to your backend
+            console.log({
+                name,
+                category,
+                amount,
+                date,
+                description
+            });
+            
+            // Add the expense to the UI (for demo purposes)
+            addExpenseToList(name, category, amount, new Date(date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }));
+            
+            // Update charts and stats
+            updateBudgetStats();
+            
+            // Close the modal
+            closeExpenseModal();
+        });
+        
+        // Create Budget Allocation Chart
+        const budgetCtx = document.getElementById('budgetChart').getContext('2d');
+        const budgetChart = new Chart(budgetCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Venue', 'Food & Beverages', 'Entertainment', 'Marketing', 'Decoration', 'Media', 'Staff', 'Contingency'],
+                datasets: [{
+                    data: [15000, 12000, 8000, 5000, 3000, 4000, 2000, 1000],
+                    backgroundColor: [
+                        '#3498db',
+                        '#e74c3c',
+                        '#2ecc71',
+                        '#f39c12',
+                        '#9b59b6',
+                        '#1abc9c',
+                        '#34495e',
+                        '#95a5a6'
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            boxWidth: 12,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value / total) * 100);
+                                return `${label}: $${value.toLocaleString()} (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                cutout: '65%'
+            }
+        });
+        
+        // Function to add expense to the list
+        function addExpenseToList(name, category, amount, date) {
+            const expenseList = document.querySelector('.expense-list');
+            
+            let iconClass = 'fa-receipt';
+            switch(category) {
+                case 'venue': iconClass = 'fa-building'; break;
+                case 'catering': iconClass = 'fa-utensils'; break;
+                case 'entertainment': iconClass = 'fa-music'; break;
+                case 'marketing': iconClass = 'fa-bullhorn'; break;
+                case 'decoration': iconClass = 'fa-paint-brush'; break;
+                case 'media': iconClass = 'fa-camera'; break;
+                case 'staff': iconClass = 'fa-users'; break;
+            }
+            
+            // Format the category name for display
+            const categoryDisplay = category.charAt(0).toUpperCase() + category.slice(1);
+            
+            const expenseItem = document.createElement('li');
+            expenseItem.className = 'expense-item';
+            expenseItem.innerHTML = `
+                <div class="expense-info">
+                    <div class="expense-icon">
+                        <i class="fas ${iconClass}"></i>
+                    </div>
+                    <div class="expense-details">
+                        <h4>${name}</h4>
+                        <p>${categoryDisplay} • ${date}</p>
+                    </div>
+                </div>
+                <div class="expense-amount">$${parseFloat(amount).toLocaleString()}</div>
+                <div class="expense-actions">
+                    <button class="action-btn"><i class="fas fa-edit"></i></button>
+                    <button class="action-btn"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            
+            // Add to the beginning of the list
+            expenseList.insertBefore(expenseItem, expenseList.firstChild);
+            
+            // Add event listeners to new buttons
+            const editBtn = expenseItem.querySelector('.fa-edit').parentNode;
+            const deleteBtn = expenseItem.querySelector('.fa-trash').parentNode;
+            
+            editBtn.addEventListener('click', () => {
+                // Edit functionality would go here
+                alert('Edit expense: ' + name);
+            });
+            
+            deleteBtn.addEventListener('click', () => {
+                if (confirm('Are you sure you want to delete this expense?')) {
+                    expenseItem.remove();
+                    updateBudgetStats();
+                }
+            });
+        }
+        
+        // Update budget statistics (simplified for demo)
+        function updateBudgetStats() {
+            // In a real application, this would calculate actual totals from database
+            // This is just a simple demo update
+            
+            const totalBudget = 50000;
+        }
+            
+            // Simulate a new spen
+</script>
+</body>
+</html>
