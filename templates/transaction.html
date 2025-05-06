@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Transaction Page | Financial Management</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #f8f9fa;
+      font-family: "Segoe UI", sans-serif;
+    }
+    .transaction-container {
+      max-width: 500px;
+      margin: 80px auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.05);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="transaction-container">
+    <h3 class="mb-4 text-center">Create Transaction</h3>
+
+    <form id="transaction-form">
+      <div class="form-group">
+        <label>Amount (€)</label>
+        <input type="number" id="amount" class="form-control" placeholder="Enter amount" required>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 mt-3">Submit Transaction</button>
+    </form>
+
+    <div id="response-message" class="mt-4 text-center"></div>
+  </div>
+
+  <script>
+    const form = document.getElementById('transaction-form');
+    const responseMessage = document.getElementById('response-message');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const amount = document.getElementById('amount').value;
+
+      // Get the Firebase ID token from cookie
+      function getCookie(name) {
+        const value = "; " + document.cookie;
+        const parts = value.split("; " + name + "=");
+        if (parts.length === 2) return parts.pop().split(";").shift();
+      }
+
+      const idToken = getCookie('token');
+      if (!idToken) {
+        responseMessage.innerHTML = `<div class="alert alert-danger">User not logged in.</div>`;
+        return;
+      }
+
+      try {
+        const res = await fetch('/transaction', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + idToken
+          },
+          body: JSON.stringify({
+            amount: parseFloat(amount)
+          })
+        });
+
+        const data = await res.json();
+        responseMessage.innerHTML = `<div class="alert alert-info">${data.message}</div>`;
+
+        form.reset();
+      } catch (error) {
+        console.error('Error:', error);
+        responseMessage.innerHTML = `<div class="alert alert-danger">Error sending transaction</div>`;
+      }
+    });
+  </script>
+
+</body>
+</html>
