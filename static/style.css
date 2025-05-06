@@ -1,0 +1,127 @@
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f7f7f7;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+.navbar {
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+.logo {
+    font-size: 24px;
+}
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+    margin: 0;
+    padding: 0;
+}
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+}
+.nav-links a.active {
+    color: blue;
+}
+.logout {
+    background: #d9534f;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.content h2 {
+    margin-top: 0;
+}
+.summary {
+    display: flex;
+    gap: 20px;
+    margin: 20px 0;
+}
+.card {
+    background: white;
+    flex: 1;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    text-align: center;
+}
+.card h4 {
+    margin-bottom: 10px;
+}
+.card p {
+    color: #3b82f6;
+    font-size: 24px;
+    font-weight: bold;
+}
+.controls {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+}
+.control-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-weight: 500;
+}
+.alerts h2 {
+    margin-top: 0;
+}
+.add-alert {
+    background: #4a68d1;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 20px 0;
+}
+.budgets {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.budget-card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    min-width: 280px;
+}
+.budget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+.edit-alert {
+    background: none;
+    border: 1px solid #4a68d1;
+    color: #4a68d1;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
