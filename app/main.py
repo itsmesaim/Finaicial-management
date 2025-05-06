@@ -12,6 +12,8 @@ import os
 
 from dotenv import load_dotenv
 from datetime import datetime
+from functools import lru_cache
+import time
 
 from google.cloud import firestore
 
@@ -251,6 +253,151 @@ class BudgetRecommendationService:
         }
         return firestore_db.collection('financial_goals').add(goal_data)
 
+
+
+@app.get("/graph-data/summary")
+async def get_graph_summary(request: Request):
+    """Returns summary data for graphs (e.g., pie or bar chart)."""
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return JSONResponse(status_code=401, content={"message": "Authorization header missing or invalid"})
+
+    id_token = auth_header.split(" ")[1]
+    user_info = validate_firebase_token(id_token)
+    if not user_info:
+        return JSONResponse(status_code=401, content={"message": "Invalid or expired token"})
+
+    user_id = user_info["uid"]
+    transactions = BudgetRecommendationService.get_transactions(user_id)
+
+    summary = {
+        "income": 0.0,
+        "expense": 0.0,
+        "labels": [],
+        "values": []
+    }
+
+    category_totals = {}
+
+    for tx in transactions:
+        amount = float(tx.get("amount", 0))
+        tx_type = tx.get("type")
+        category = tx.get("category", "Uncategorized")
+
+        if tx_type == "income":
+            summary["income"] += amount
+        elif tx_type == "expense":
+            summary["expense"] += amount
+            category_totals[category] = category_totals.get(category, 0) + amount
+
+    summary["labels"] = list(category_totals.keys())
+    summary["values"] = list(category_totals.values())
+
+    return JSONResponse(content=summary)
+
+
+@app.post("/event/create")
+async def create_event(request: Request):
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return JSONResponse(status_code=401, content={"message": "Authorization header missing or invalid"})
+
+    id_token = auth_header.split(" ")[1]
+    user_info = validate_firebase_token(id_token)
+    if not user_info:
+        return JSONResponse(status_code=401, content={"message": "Invalid token"})
+
+    data = await request.json()
+    title = data.get("title")
+    description = data.get("description", "")
+    date = data.get("date")  # ISO format expected
+    location = data.get("location", "")
+
+    event_data = {
+        "creator_id": user_info["uid"],
+        "title": title,
+        "description": description,
+        "date": date,
+        "location": location,
+        "collaborators": [user_info["uid"]],
+        "created_at": firestore.SERVER_TIMESTAMP
+    }
+
+    doc_ref = firestore_db.collection("events").add(event_data)
+    return JSONResponse(status_code=201, content={"message": "Event created successfully."})
+
+@app.post("/event/{event_id}/add-collaborator")
+async def add_collaborator(event_id: str, request: Request):
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return JSONResponse(status_code=401, content={"message": "Unauthorized"})
+
+    id_token = auth_header.split(" ")[1]
+    user_info = validate_firebase_token(id_token)
+    if not user_info:
+        return JSONResponse(status_code=401, content={"message": "Invalid token"})
+
+    data = await request.json()
+    collaborator_uid = data.get("user_id")
+
+    event_ref = firestore_db.collection("events").document(event_id)
+    event_doc = event_ref.get()
+
+    if not event_doc.exists:
+        return JSONResponse(status_code=404, content={"message": "Event not found"})
+
+    event_data = event_doc.to_dict()
+    if user_info["uid"] != event_data["creator_id"]:
+        return JSONResponse(status_code=403, content={"message": "Only the creator can add collaborators."})
+
+    if collaborator_uid not in event_data["collaborators"]:
+        event_ref.update({
+            "collaborators": firestore.ArrayUnion([collaborator_uid])
+        })
+
+    return JSONResponse(content={"message": "Collaborator added successfully"})
+
+
+@app.get("/events")
+async def get_user_events(request: Request):
+    auth_header = request.headers.get('Authorization')
+    if not auth_header or not auth_header.startswith('Bearer '):
+        return JSONResponse(status_code=401, content={"message": "Unauthorized"})
+
+    id_token = auth_header.split(" ")[1]
+    user_info = validate_firebase_token(id_token)
+    if not user_info:
+        return JSONResponse(status_code=401, content={"message": "Invalid token"})
+
+    events_ref = firestore_db.collection("events").where("collaborators", "array_contains", user_info["uid"])
+    events = events_ref.stream()
+
+    return JSONResponse(content=[e.to_dict() for e in events])
+
+
+
+@lru_cache(maxsize=128)
+def cached_user_dashboard(uid: str):
+    # Example: simulate summarizing many Firestore reads
+    time.sleep(0.5)  # Simulate processing time
+    return {
+        "welcome": f"Hello {uid}",
+        "summary": "Your financial and activity dashboard is ready."
+    }
+
+@app.get("/dashboard")
+async def get_dashboard(request: Request):
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        return JSONResponse(status_code=401, content={"message": "Unauthorized"})
+
+    token = auth_header.split(" ")[1]
+    user = validate_firebase_token(token)
+    if not user:
+        return JSONResponse(status_code=401, content={"message": "Invalid token"})
+
+    return cached_user_dashboard(user["uid"])
+
 # route to transction page
 @app.get("/transaction-page", response_class=HTMLResponse)
 async def transaction_page(request: Request):
@@ -419,6 +566,7 @@ async def get_predictive_insights(user_token: dict = Depends(validate_firebase_t
 
     return JSONResponse(Predictive_insights)
 
+
 #Settlemet management
 def process_settlement(user_id: str, amount: float, currency: str) -> dict:
     """
@@ -445,3 +593,39 @@ def process_settlement(user_id: str, amount: float, currency: str) -> dict:
     print(f"[LOG] Settlement created: {settlement}")
 
     return settlement
+
+
+@app.get("/event-planning", response_class=HTMLResponse)
+async def event_page(request: Request):
+    return templates.TemplateResponse("event-planning.html", {"request": request})
+
+@app.get("/performance-optimization", response_class=HTMLResponse)
+async def performance_page(request: Request):
+    return templates.TemplateResponse("performance-optimization.html", {"request": request})
+  
+
+# route for Event Budget Creation
+@app.get("/event-budget", response_class=HTMLResponse)
+async def budget_analysis_page(request: Request):
+    id_token = request.cookies.get("token")
+    user_token = validate_firebase_token(id_token)
+
+    if not user_token:
+        return RedirectResponse("/", status_code=303)
+
+    return templates.TemplateResponse("event-budget.html", {"request": request, "user_token": user_token})
+
+# route for Customizable-Alerts-for-Financial-Changes
+@app.get("/customizable-alert", response_class=HTMLResponse)
+async def budget_analysis_page(request: Request):
+    id_token = request.cookies.get("token")
+    user_token = validate_firebase_token(id_token)
+
+    if not user_token:
+        return RedirectResponse("/", status_code=303)
+
+    return templates.TemplateResponse("customizable_alert.html", {"request": request, "user_token": user_token})
+
+
+
+
