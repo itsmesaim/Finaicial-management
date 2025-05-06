@@ -1,151 +1,176 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Budget Warnings</title>
-  <link rel="stylesheet" href="budget-warnings-style.css">
-  <link rel="stylesheet" href="alert-settings.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
   <style>
-    /* Modal popup style */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: 100;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.5);
-      justify-content: center;
-      align-items: center;
+    body {
+      background-color: #f4f6f9;
+      font-family: "Segoe UI", sans-serif;
     }
-    .modal-content {
+
+    .budget-card {
       background: white;
-      padding: 20px;
       border-radius: 12px;
-      width: 90%;
-      max-width: 600px;
-      overflow-y: auto;
-      max-height: 90vh;
-      position: relative;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+      margin-bottom: 20px;
+      transition: 0.3s;
     }
-    .close-btn {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 24px;
-      color: #333;
-      cursor: pointer;
-      font-weight: bold;
+
+    .budget-card:hover {
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
     }
-    .configure-button {
-      display: block;
-      margin: 20px auto;
-      padding: 10px 20px;
+
+    .progress {
+      height: 15px;
+      border-radius: 8px;
+    }
+
+    .modal-header h5 {
+      font-weight: 600;
+    }
+
+    .configure-btn {
       background-color: #4a68d1;
       color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
+      font-weight: 500;
+      border-radius: 10px;
+      padding: 10px 24px;
+    }
+
+    .configure-btn:hover {
+      background-color: #3b58b3;
+    }
+
+    .switch input {
+      height: 0;
+      width: 0;
+      visibility: hidden;
+    }
+
+    .switch {
+      display: inline-block;
+      width: 50px;
+      height: 25px;
+      background: #ccc;
+      border-radius: 25px;
+      position: relative;
       cursor: pointer;
+    }
+
+    .switch::after {
+      content: "";
+      position: absolute;
+      width: 21px;
+      height: 21px;
+      background: white;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      transition: 0.3s;
+    }
+
+    .switch input:checked + .slider::after {
+      left: 27px;
+    }
+
+    .switch input:checked + .slider {
+      background: #4a68d1;
+    }
+
+    .slider {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      transition: 0.3s;
+      border-radius: 25px;
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>Budget Warnings</h1>
+<div class="container my-5">
+  <h2 class="mb-4 text-center">📊 Budget Warnings</h2>
 
-  <div class="warning-card">
-    <div class="warning-header">
-      <span class="warning-icon">⚠️</span>
-      <h2>abcdef</h2>
-    </div>
+  <div class="budget-card">
+    <h5 class="mb-2">⚠️ abcdef</h5>
     <p><strong>Budget Limit:</strong> £300</p>
-    <div class="progress-bar">
-      <div class="progress-fill orange" style="width: 40%;"></div>
+    <div class="progress mb-2">
+      <div class="progress-bar bg-warning" style="width: 40%">40%</div>
     </div>
-    <p><strong>Amount Spent:</strong> £30</p>
-    <p>You're at 40% of your budget. Keep monitoring spending.</p>
+    <p><strong>Amount Spent:</strong> £120</p>
+    <p class="text-muted">You're at 40% of your budget. Keep monitoring your spending.</p>
   </div>
 
-  <div class="warning-card">
-    <div class="warning-header">
-      <span class="warning-icon">⚠️</span>
-      <h2>Dummy</h2>
-    </div>
+  <div class="budget-card">
+    <h5 class="mb-2">⚠️ Dummy</h5>
     <p><strong>Budget Limit:</strong> £300</p>
-    <div class="progress-bar">
-      <div class="progress-fill orange" style="width: 50%;"></div>
+    <div class="progress mb-2">
+      <div class="progress-bar bg-warning" style="width: 50%">50%</div>
     </div>
     <p><strong>Amount Spent:</strong> £150</p>
-    <p>You've spent 50% of your budget. Adjust expenses as needed.</p>
+    <p class="text-muted">You've spent 50% of your budget. Adjust expenses if needed.</p>
   </div>
 
-  <button class="configure-button" onclick="openModal()">⚙️ Configure Alerts</button>
+  <div class="text-center">
+    <button class="configure-btn" data-bs-toggle="modal" data-bs-target="#settingsModal">⚙️ Configure Alerts</button>
+  </div>
 </div>
 
-<!-- Modal Popup -->
-<div id="settingsModal" class="modal">
-  <div class="modal-content">
-    <span class="close-btn" onclick="closeModal()">&times;</span>
-    <div class="settings-container">
-      <h1>Overspending Alert Settings</h1>
-
-      <div class="settings-section">
-        <h2>Alert Thresholds</h2>
-        <div class="slider-group">
-          <label for="warning80">80% Warning</label>
-          <input type="range" id="warning80" min="0" max="100" value="80">
-        </div>
-        <div class="slider-group">
-          <label for="warning90">90% Warning</label>
-          <input type="range" id="warning90" min="0" max="100" value="90">
-        </div>
-        <div class="slider-group">
-          <label for="warning100">100% Warning</label>
-          <input type="range" id="warning100" min="0" max="100" value="100">
-        </div>
+<!-- Modal -->
+<div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-3">
+      <div class="modal-header">
+        <h5 class="modal-title" id="settingsModalLabel">Overspending Alert Settings</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
+      <div class="modal-body">
 
-      <div class="settings-section">
-        <h2>Notifications</h2>
-        <div class="toggle-group">
-          <label>Receive SMS Alert</label>
-          <label class="switch">
-            <input type="checkbox" checked>
-            <span class="slider"></span>
-          </label>
+        <h6>Alert Thresholds</h6>
+        <div class="mb-3">
+          <label for="warning80" class="form-label">80% Warning</label>
+          <input type="range" class="form-range" id="warning80" value="80">
         </div>
-        <div class="toggle-group">
-          <label>Receive Email Alert</label>
-          <label class="switch">
-            <input type="checkbox" checked>
-            <span class="slider"></span>
-          </label>
+        <div class="mb-3">
+          <label for="warning90" class="form-label">90% Warning</label>
+          <input type="range" class="form-range" id="warning90" value="90">
         </div>
-        <div class="toggle-group">
-          <label>In-App Notification</label>
-          <label class="switch">
-            <input type="checkbox" checked>
-            <span class="slider"></span>
-          </label>
+        <div class="mb-3">
+          <label for="warning100" class="form-label">100% Warning</label>
+          <input type="range" class="form-range" id="warning100" value="100">
         </div>
+
+        <h6 class="mt-4">Notifications</h6>
+        <div class="form-check form-switch mb-2">
+          <input class="form-check-input" type="checkbox" id="smsAlert" checked>
+          <label class="form-check-label" for="smsAlert">Receive SMS Alert</label>
+        </div>
+        <div class="form-check form-switch mb-2">
+          <input class="form-check-input" type="checkbox" id="emailAlert" checked>
+          <label class="form-check-label" for="emailAlert">Receive Email Alert</label>
+        </div>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="inAppAlert" checked>
+          <label class="form-check-label" for="inAppAlert">In-App Notification</label>
+        </div>
+        
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button class="btn btn-primary">Save Settings</button>
       </div>
     </div>
   </div>
 </div>
 
-<script>
-function openModal() {
-  document.getElementById('settingsModal').style.display = 'flex';
-}
-
-function closeModal() {
-  document.getElementById('settingsModal').style.display = 'none';
-}
-</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
