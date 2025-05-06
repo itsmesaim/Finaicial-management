@@ -420,6 +420,15 @@ async def get_predictive_insights(user_token: dict = Depends(validate_firebase_t
     return JSONResponse(Predictive_insights)
 
 
+@app.get("/event-planning", response_class=HTMLResponse)
+async def event_page(request: Request):
+    return templates.TemplateResponse("event-planning.html", {"request": request})
+
+@app.get("/performance-optimization", response_class=HTMLResponse)
+async def performance_page(request: Request):
+    return templates.TemplateResponse("performance-optimization.html", {"request": request})
+  
+
 # route for Event Budget Creation
 @app.get("/event-budget", response_class=HTMLResponse)
 async def budget_analysis_page(request: Request):
@@ -441,3 +450,4 @@ async def budget_analysis_page(request: Request):
         return RedirectResponse("/", status_code=303)
 
     return templates.TemplateResponse("customizable_alert.html", {"request": request, "user_token": user_token})
+
