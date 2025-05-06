@@ -419,6 +419,7 @@ async def get_predictive_insights(user_token: dict = Depends(validate_firebase_t
 
     return JSONResponse(Predictive_insights)
 
+
 @app.get("/event-planning", response_class=HTMLResponse)
 async def event_page(request: Request):
     return templates.TemplateResponse("event-planning.html", {"request": request})
@@ -426,3 +427,27 @@ async def event_page(request: Request):
 @app.get("/performance-optimization", response_class=HTMLResponse)
 async def performance_page(request: Request):
     return templates.TemplateResponse("performance-optimization.html", {"request": request})
+  
+
+# route for Event Budget Creation
+@app.get("/event-budget", response_class=HTMLResponse)
+async def budget_analysis_page(request: Request):
+    id_token = request.cookies.get("token")
+    user_token = validate_firebase_token(id_token)
+
+    if not user_token:
+        return RedirectResponse("/", status_code=303)
+
+    return templates.TemplateResponse("event-budget.html", {"request": request, "user_token": user_token})
+
+# route for Customizable-Alerts-for-Financial-Changes
+@app.get("/customizable-alert", response_class=HTMLResponse)
+async def budget_analysis_page(request: Request):
+    id_token = request.cookies.get("token")
+    user_token = validate_firebase_token(id_token)
+
+    if not user_token:
+        return RedirectResponse("/", status_code=303)
+
+    return templates.TemplateResponse("customizable_alert.html", {"request": request, "user_token": user_token})
+
