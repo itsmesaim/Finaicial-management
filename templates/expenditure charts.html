@@ -1,82 +1,160 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Expenditure Analysis Charts</title>
-  <link rel="stylesheet" href="charts.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login | Financial Management</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
+  <script type="module" src="/static/firebase-login.js"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #4f46e5, #3b82f6);
+      font-family: "Segoe UI", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-container {
+      max-width: 1000px;
+      width: 100%;
+      background-color: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      display: flex;
+      overflow: hidden;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-section {
+      flex: 1;
+      padding: 50px 40px;
+    }
+
+    .form-section h3 {
+      font-weight: 700;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .form-section p {
+      font-size: 15px;
+      color: #6c757d;
+    }
+
+    .form-control {
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 16px;
+    }
+
+    .btn-primary {
+      background-color: #4f46e5;
+      border-color: #4f46e5;
+    }
+
+    .btn-primary:hover {
+      background-color: #4338ca;
+      border-color: #4338ca;
+    }
+
+    .btn {
+      font-weight: 500;
+      transition: 0.3s ease;
+    }
+
+    .btn + .btn {
+      margin-top: 8px;
+    }
+
+    #sign-out {
+      margin-top: 16px;
+    }
+
+    .image-section {
+      flex: 1;
+      background: #f0f4ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .image-section img {
+      width: 85%;
+      max-width: 400px;
+    }
+
+    .text-muted a {
+      color: #4f46e5;
+      text-decoration: none;
+    }
+
+    .text-muted a:hover {
+      text-decoration: underline;
+    }
+
+    @media screen and (max-width: 768px) {
+      .login-container {
+        flex-direction: column;
+        margin: 20px;
+      }
+      .image-section {
+        display: none;
+      }
+    }
+  </style>
 </head>
 <body>
+  <div class="login-container">
+    <div class="form-section">
+      <div id="user-info" hidden>
+        <h3 class="mb-4 text-primary">Welcome, <span id="user-name">User</span> 👋</h3>
+        <a href="/transaction" class="btn btn-success w-100">➕ Add a Transaction</a>
+        <a href="/predictive-insights-page" class="btn btn-info w-100">📈 Predictive Insights</a>
+        <a href="/user-roles" class="btn btn-warning w-100">👥 User Roles & Permissions</a>
+        <a href="/personalized-suggestion" class="btn btn-dark w-100">✨ Personalized Suggestions</a>
+        <a href="/budget-warnings" class="btn btn-danger w-100">🚨 Budget Warnings</a>
+        <a href="/connect-bank-account" class="btn btn-outline-primary w-100">🏦 Connect Bank Account</a>
+        <a href="/expenditure-charts" class="btn btn-outline-secondary w-100">📊 Expenditure Charts</a>
+        <a href="/dashboard" class="btn btn-outline-dark w-100">💼 Go to Dashboard</a>
+        <a href="/alerts-page" class="btn btn-outline-dark w-100">⚠️ Overspending Alerts</a>
+        <button id="sign-out" class="btn btn-outline-danger w-100">Sign Out</button>
+      </div>
 
-  <div class="navbar">
-    <h1>📊 Expenditure Dashboard</h1>
-    <div class="view-toggle">
-      <label for="view">View:</label>
-      <select id="view">
-        <option>Monthly</option>
-        <option>Quarterly</option>
-        <option>Annual</option>
-      </select>
+      <div id="login-section">
+        <h3>Welcome Back</h3>
+        <p class="mb-4">Login to manage your finances like a pro.</p>
+        <div class="form-group">
+          <label>Email address</label>
+          <input type="email" id="login-email" class="form-control" placeholder="you@example.com"/>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="login-password" class="form-control" placeholder="Enter password"/>
+        </div>
+        <button id="login-btn" class="btn btn-primary w-100 mt-3">Login</button>
+        <p class="text-center text-muted mt-4">Don't have an account? <a href="/signup">Sign up</a></p>
+      </div>
     </div>
-  </div>
 
-  <div class="dashboard">
-    <!-- Pie Chart -->
-    <div class="chart-card">
-      <h2>Spending Breakdown by Category</h2>
-      <canvas id="pieChart"></canvas>
-    </div>
-
-    <!-- Line Chart -->
-    <div class="chart-card">
-      <h2>Spending Patterns Over Time</h2>
-      <canvas id="lineChart"></canvas>
+    <div class="image-section">
+      <img src="/static/illustration.png" alt="Finance Illustration" />
     </div>
   </div>
 
   <script>
-    const pieCtx = document.getElementById('pieChart').getContext('2d');
-    new Chart(pieCtx, {
-      type: 'pie',
-      data: {
-        labels: ['Food', 'Transport', 'Bills', 'Entertainment', 'Savings'],
-        datasets: [{
-          label: 'Spending',
-          data: [300, 150, 200, 100, 250],
-          backgroundColor: ['#ff6384', '#36a2eb', '#ffcd56', '#4bc0c0', '#9966ff'],
-          hoverOffset: 8
-        }]
-      },
-      options: {
-        responsive: true,
-        onClick: (e, items) => {
-          if (items.length > 0) {
-            alert('Show subcategory breakdown for: ' + items[0].element.$context.raw);
-          }
-        }
+    // This assumes firebase-login.js sets window.userData
+    window.onload = function () {
+      if (window.userData && window.userData.name) {
+        document.getElementById("user-name").textContent = window.userData.name;
       }
-    });
-
-    const lineCtx = document.getElementById('lineChart').getContext('2d');
-    new Chart(lineCtx, {
-      type: 'line',
-      data: {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
-        datasets: [{
-          label: 'Total Spending',
-          data: [500, 700, 600, 800, 750],
-          fill: false,
-          borderColor: '#007bff',
-          tension: 0.1
-        }]
-      },
-      options: {
-        responsive: true
-      }
-    });
+    };
   </script>
-
 </body>
 </html>

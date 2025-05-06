@@ -28,15 +28,16 @@ class FirestoreService:
 
     #to save the bank information
     @staticmethod
-    def save_bank_account_info(uid, account_holder_name, account_last4):
+    def save_bank_account_info(uid, account_holder_name, account_last4, bank_name, account_type):
         bank_data = {
             'account_holder_name': account_holder_name,
             'account_last4': account_last4,
+            'bank_name': bank_name,
+            'account_type': account_type,
             'created_by_uid': uid,
             'created_at': datetime.utcnow()
         }
         return firestore_db.collection('bank_accounts').document(uid).set(bank_data)
-    
 
 
 

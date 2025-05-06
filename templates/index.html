@@ -2,79 +2,444 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login | Financial Management</title>
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Finance Pro | Smart Money Management</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"/>
   <script type="module" src="/static/firebase-login.js"></script>
   <style>
-    body {
-      background-color: #f8f9fa;
-      font-family: "Segoe UI", sans-serif;
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --secondary: #6366f1;
+      --success: #10b981;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --info: #3b82f6;
+      --light: #f9fafb;
+      --dark: #1e293b;
+      --gradient-start: #2563eb;
+      --gradient-end: #4f46e5;
     }
+    
+    body {
+      background: linear-gradient(135deg, var(--gradient-start), var(--gradient-end));
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      margin: 0;
+    }
+
     .login-container {
-      max-width: 1000px;
-      margin: 50px auto;
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.05);
+      max-width: 1100px;
+      width: 100%;
+      background-color: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
       display: flex;
       overflow: hidden;
+      animation: fadeInUp 0.6s ease-out;
     }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .form-section {
       flex: 1;
-      padding: 40px;
+      padding: 60px 50px;
+      position: relative;
     }
-    .image-section {
-      flex: 1;
-      background-color: #f1f3f5;
+
+    .form-section h2 {
+      font-weight: 800;
+      font-size: 32px;
+      margin-bottom: 12px;
+      color: var(--dark);
+      letter-spacing: -0.5px;
+    }
+
+    .form-section p {
+      font-size: 16px;
+      color: #64748b;
+      margin-bottom: 30px;
+    }
+
+    .form-label {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 8px;
+      color: #475569;
+    }
+
+    .form-control {
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-size: 16px;
+      border: 2px solid #e2e8f0;
+      transition: all 0.3s ease;
+      margin-bottom: 20px;
+    }
+
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .btn {
+      font-weight: 600;
+      font-size: 16px;
+      padding: 14px 16px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      border-color: var(--primary-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+    
+    .btn-option {
       display: flex;
+      align-items: center;
+      margin-bottom: 14px;
+      background-color: white;
+      border: 2px solid #e2e8f0;
+      transition: all 0.3s ease;
+      color: #475569;
+      font-weight: 600;
+    }
+    
+    .btn-option:hover {
+      background-color: #f8fafc;
+      border-color: #cbd5e1;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    
+    .btn-option i {
+      font-size: 18px;
+      width: 24px;
+      margin-right: 12px;
+      color: var(--primary);
+    }
+    
+    .btn-success {
+      background-color: var(--success);
+      border-color: var(--success);
+    }
+    
+    .btn-success:hover {
+      background-color: #059669;
+      border-color: #059669;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+    }
+    
+    .btn-danger {
+      background-color: var(--danger);
+      border-color: var(--danger);
+    }
+    
+    .btn-danger:hover {
+      background-color: #dc2626;
+      border-color: #dc2626;
+    }
+
+    .forgot-password {
+      display: inline-block;
+      font-size: 14px;
+      color: var(--primary);
+      text-decoration: none;
+      margin-top: -10px;
+      margin-bottom: 20px;
+    }
+
+    .forgot-password:hover {
+      text-decoration: underline;
+      color: var(--primary-hover);
+    }
+
+    .text-muted {
+      font-size: 15px;
+      margin-top: 30px;
+    }
+
+    .text-muted a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .text-muted a:hover {
+      text-decoration: underline;
+      color: var(--primary-hover);
+    }
+
+    .image-section {
+      flex: 1.2;
+      background: linear-gradient(135deg, #eff6ff, #e0f2fe);
+      display: flex;
+      align-items: center;
       justify-content: center;
+      padding: 40px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .image-section img {
+      width: 100%;
+      max-width: 500px;
+      z-index: 2;
+    }
+    
+    .image-section::before {
+      content: "";
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(219, 234, 254, 0.8), rgba(191, 219, 254, 0.8));
+      top: -100px;
+      right: -100px;
+      z-index: 1;
+    }
+    
+    .image-section::after {
+      content: "";
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(219, 234, 254, 0.8), rgba(191, 219, 254, 0.8));
+      bottom: -50px;
+      left: -50px;
+      z-index: 1;
+    }
+    
+    .welcome-message {
+      margin-bottom: 40px;
+    }
+    
+    .welcome-message span {
+      color: var(--primary);
+      font-weight: 700;
+    }
+    
+    .dashboard-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 30px;
+    }
+    
+    .dashboard-action {
+      background: white;
+      border: 2px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: var(--dark);
+    }
+    
+    .dashboard-action:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 20px rgba(0, 0, 0, 0.08);
+      border-color: #cbd5e1;
+      text-decoration: none;
+    }
+    
+    .dashboard-action i {
+      font-size: 28px;
+      color: var(--primary);
+      margin-bottom: 10px;
+      display: block;
+    }
+    
+    .dashboard-action h4 {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0;
+      color: var(--dark);
+    }
+    
+    .dashboard-action p {
+      font-size: 13px;
+      color: #64748b;
+      margin: 6px 0 0 0;
+    }
+    
+    #sign-out {
+      margin-top: 24px;
+    }
+    
+    .login-option {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    
+    .remember-me {
+      display: flex;
       align-items: center;
     }
-    .image-section img {
-      width: 80%;
+    
+    .remember-me input {
+      margin-right: 8px;
     }
-    .form-control {
-      border-radius: 6px;
+    
+    @media (max-width: 992px) {
+      .login-container {
+        flex-direction: column;
+        max-width: 600px;
+      }
+      
+      .image-section {
+        display: none;
+      }
+      
+      .form-section {
+        padding: 40px 30px;
+      }
+      
+      .dashboard-actions {
+        grid-template-columns: 1fr;
+      }
     }
-    .btn-primary {
-      background-color: #4f46e5;
-      border-color: #4f46e5;
-    }
-    #sign-out {
-      margin-top: 10px;
+
+    @media (max-width: 576px) {
+      .form-section {
+        padding: 30px 20px;
+      }
+      
+      .form-section h2 {
+        font-size: 28px;
+      }
+      
+      .btn {
+        font-size: 15px;
+        padding: 12px 14px;
+      }
     }
   </style>
 </head>
 <body>
-
   <div class="login-container">
     <div class="form-section">
+      <!-- Logged In State -->
       <div id="user-info" hidden>
-        <h3 id="user-label" class="mb-4 text-primary"></h3>
-        <button id="sign-out" class="btn btn-outline-danger w-100">Sign Out</button>
+        <div class="welcome-message">
+          <h2>Welcome back, <span id="user-name">{{ user_token.name or user_token.email }}</span></h2>
+          <p>Your financial journey continues. What would you like to manage today?</p>
+        </div>
+        
+        <div class="dashboard-actions">
+          <a href="/dashboard" class="dashboard-action">
+            <i class="fas fa-chart-line"></i>
+            <h4>Dashboard</h4>
+            <p>View your financial overview</p>
+          </a>
+          <a href="/transaction" class="dashboard-action">
+            <i class="fas fa-plus-circle"></i>
+            <h4>Add Transaction</h4>
+            <p>Record new expenses or income</p>
+          </a>
+          <a href="/predictive-insights-page" class="dashboard-action">
+            <i class="fas fa-chart-bar"></i>
+            <h4>Insights</h4>
+            <p>AI-powered financial predictions</p>
+          </a>
+          <a href="/budget-warnings" class="dashboard-action">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h4>Alerts</h4>
+            <p>Budget warnings and notifications</p>
+          </a>
+        </div>
+        
+        <div class="additional-options">
+          <a href="/connect-bank-account" class="btn btn-option w-100">
+            <i class="fas fa-university"></i> Connect Bank Account
+          </a>
+          <a href="/expenditure-charts" class="btn btn-option w-100">
+            <i class="fas fa-chart-pie"></i> View Expenditure Reports
+          </a>
+          <a href="/personalized-suggestion" class="btn btn-option w-100">
+            <i class="fas fa-lightbulb"></i> Get Personalized Suggestions
+          </a>
+          <a href="/user-roles" class="btn btn-option w-100">
+            <i class="fas fa-users-cog"></i> Manage User Roles
+          </a>
+        </div>
+        
+        <button id="sign-out" class="btn btn-danger w-100">Sign Out <i class="fas fa-sign-out-alt ml-2"></i></button>
       </div>
 
+      <!-- Login State -->
       <div id="login-section">
-        <h3 class="mb-3">Get Started Now</h3>
-        <p class="text-muted mb-4">Enter your credentials to access your account.</p>
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" id="login-email" class="form-control" placeholder="Enter email" />
+        <h2>Welcome to Finance Pro</h2>
+        <p>Sign in to access your personal financial dashboard.</p>
+        
+        <label for="login-email" class="form-label">Email address</label>
+        <input type="email" id="login-email" class="form-control" placeholder="name@example.com"/>
+        
+        <label for="login-password" class="form-label">Password</label>
+        <input type="password" id="login-password" class="form-control" placeholder="Enter your password"/>
+        
+        <div class="login-option">
+          <div class="remember-me">
+            <input type="checkbox" id="remember" checked>
+            <label for="remember" class="mb-0">Remember me</label>
+          </div>
+          <a href="/forgot-password" class="forgot-password">Forgot password?</a>
         </div>
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" id="login-password" class="form-control" placeholder="Enter password" />
-        </div>
-        <button id="login-btn" class="btn btn-primary w-100 mt-2">Login</button>
-        <p class="text-center mt-3">Don't have an account? <a href="/signup">Signup</a></p>
+        
+        <button id="login-btn" class="btn btn-primary w-100">
+          Sign In <i class="fas fa-arrow-right ml-2"></i>
+        </button>
+        
+        <p class="text-center text-muted">Don't have an account? <a href="/signup">Create Account</a></p>
       </div>
     </div>
 
     <div class="image-section">
-      <img src="/static/illustration.png" alt="Illustration">
+      <img src="/static/illustration.png" alt="Finance Management Illustration" />
     </div>
   </div>
 
+  <script>
+    // This assumes firebase-login.js sets window.userData
+    window.onload = function() {
+      if (window.userData && window.userData.name) {
+        document.getElementById("user-name").textContent = window.userData.name;
+        document.getElementById("user-info").hidden = false;
+        document.getElementById("login-section").hidden = true;
+      } else {
+        document.getElementById("user-info").hidden = true;
+        document.getElementById("login-section").hidden = false;
+      }
+      
+      document.getElementById('sign-out').addEventListener('click', function() {
+        // Handle sign out logic
+        if (window.signOut) {
+          window.signOut();
+        }
+        document.getElementById("user-info").hidden = true;
+        document.getElementById("login-section").hidden = false;
+      });
+    };
+  </script>
 </body>
 </html>

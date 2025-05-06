@@ -3,52 +3,109 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Verify Code | Financial Management</title>
-  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+  <title>Verify Code | FinanceTracker</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
     body {
-      background-color: #f8f9fa;
+      background: #f1f5f9;
       font-family: "Segoe UI", sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
     }
-    .verify-container {
-      max-width: 500px;
-      margin: 100px auto;
-      background-color: white;
-      border-radius: 8px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.05);
-      padding: 40px;
+
+    .verify-box {
+      width: 100%;
+      max-width: 420px;
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 0 25px rgba(0,0,0,0.05);
+      padding: 35px 30px;
     }
-    .form-control {
-      border-radius: 6px;
-      text-align: center;
-      letter-spacing: 5px;
+
+    .verify-box h2 {
       font-size: 24px;
+      font-weight: 600;
+      color: #1e293b;
     }
+
+    .verify-box p {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .form-control {
+      height: 60px;
+      font-size: 26px;
+      text-align: center;
+      letter-spacing: 8px;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
     .btn-primary {
       background-color: #4f46e5;
       border-color: #4f46e5;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 16px;
+    }
+
+    .btn-primary:hover {
+      background-color: #4338ca;
+    }
+
+    .error-box {
+      background-color: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fca5a5;
+      border-radius: 6px;
+      padding: 10px;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .resend-link {
+      display: block;
+      margin-top: 18px;
+      font-size: 14px;
+      color: #4f46e5;
+      text-decoration: none;
+    }
+
+    .resend-link:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
 
-  <div class="verify-container text-center">
-    <h4 class="mb-4">Verify Your Email</h4>
-    <p class="text-muted mb-4">Enter the 6-digit code sent to your email.</p>
+  <div class="verify-box">
+    <h2 class="text-center mb-2">Email Verification</h2>
+    <p class="text-center mb-3">Enter the 6-digit code sent to your email address.</p>
 
-    <form action="/verify-code" method="post">
+    {% if error_message %}
+      <div class="error-box text-center">
+        {{ error_message }}
+      </div>
+    {% endif %}
+
+    <form method="POST" action="/verify-code" class="mt-3">
       <input 
         type="text" 
         name="code" 
         maxlength="6" 
         minlength="6" 
+        pattern="\d{6}"
         required 
-        class="form-control mb-3" 
-        placeholder="------" 
+        class="form-control" 
+        placeholder="------"
       />
-      <button type="submit" class="btn btn-primary w-100">Verify</button>
+      <button type="submit" class="btn btn-primary w-100 mt-4">Verify Code</button>
     </form>
 
+    <a href="/resend-code" class="resend-link text-center">Didn't receive a code? Resend it</a>
   </div>
 
 </body>

@@ -72,8 +72,27 @@ def notify_all_users(transaction_info):
     user_details = FirestoreService.get_user(transaction_info.get('user_id'))
     user_name = user_details.get('name') if user_details else "Unknown User"
 
-    subject = "⚡ Important: High Value Transaction Alert"
-    body = f"A new transaction exceeded 100 euros!\n\nDetails:\nUser: {user_name}\nAmount: {transaction_info.get('amount')} €"
+    subject = "⚠️ Important: High Value Transaction Alert"
+    body = f"""
+Dear Finance Team,
+
+We would like to inform you that a high-value transaction has been recorded in the system which exceeds the €100 threshold.
+
+🔍 Transaction Summary:
+----------------------------------------
+• User Name     : {user_name}
+• Amount        : €{transaction_info.get('amount')}
+• Date & Time   : {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC
+----------------------------------------
+
+Please review this transaction and take any necessary actions if required.
+
+Thank you for your attention.
+
+Best regards,  
+FinanceTracker Alert System
+"""
+
 
     for user in all_users:
         email = user.get('email')
@@ -92,6 +111,19 @@ async def home(request: Request):
         "user_token": user_token,
         "error_message": None,
     })
+# @app.get("/", response_class=HTMLResponse)
+# async def home(request: Request):
+#     id_token = request.cookies.get("token")
+#     user_token = validate_firebase_token(id_token)
+
+#     if user_token:
+#         return RedirectResponse("/dashboard", status_code=302)
+
+#     return templates.TemplateResponse("index.html", {
+#         "request": request,
+#         "user_token": None,
+#         "error_message": None,
+#     })
 
 @app.get("/firebase-config")
 async def firebase_config():
@@ -181,17 +213,23 @@ async def connect_bank_account(request: Request):
     data = await request.json()
     account_holder_name = data.get('account_holder_name')
     account_number = data.get('account_number')
+    bank_name = data.get('bank_name')
+    account_type = data.get('account_type')
 
-    if not account_holder_name or not account_number:
-        return JSONResponse(status_code=400, content={"message": "Missing account holder or account number"})
-
-    account_last4 = account_number[-4:]  # Only store last 4 digits
-    user_id = user_info.get('uid') or user_info.get('user_id') or user_info.get('sub')
-    FirestoreService.save_bank_account_info(user_id, account_holder_name, account_last4)
+    if not all([account_holder_name, account_number, bank_name, account_type]):
+        return JSONResponse(status_code=400, content={"message": "Missing required fields"})
 
     account_last4 = account_number[-4:]
-    FirestoreService.save_bank_account_info(user_info['uid'], account_holder_name, account_last4)
+    user_id = user_info.get('uid') or user_info.get('user_id') or user_info.get('sub')
 
+    # Save all fields now
+    FirestoreService.save_bank_account_info(
+        uid=user_id,
+        account_holder_name=account_holder_name,
+        account_last4=account_last4,
+        bank_name=bank_name,
+        account_type=account_type
+    )
 
     return JSONResponse(status_code=200, content={"message": "Bank account connected securely."})
 
@@ -347,15 +385,15 @@ async def budget_analysis_page(request: Request):
 
 
 # route to Personalized-Financial-Suggestions page
-@app.get("/personalized-financial", response_class=HTMLResponse)
-async def budget_analysis_page(request: Request):
+@app.get("/personalized-suggestion", response_class=HTMLResponse)
+async def personalized_suggestion_page(request: Request):
     id_token = request.cookies.get("token")
     user_token = validate_firebase_token(id_token)
 
     if not user_token:
         return RedirectResponse("/", status_code=303)
 
-    return templates.TemplateResponse("Personalized-Financial-Suggestions.html", {"request": request, "user_token": user_token})
+    return templates.TemplateResponse("personalized-financial-suggestion.html", {"request": request, "user_token": user_token})
 
 # Create a new overspending alert
 @app.post("/alerts")
@@ -379,11 +417,21 @@ async def create_alert(request: Request, user_token: dict = Depends(validate_fir
     return JSONResponse({"message": "Alert created successfully."})
 
 # Fetch all overspending alerts for a user
-@app.get("/alerts")
-async def get_alerts(user_token: dict = Depends(validate_firebase_token)):
-    user_id = user_token.get("uid")
-    alerts = FirestoreService.get_user_alerts(user_id)
-    return alerts
+# @app.get("/alerts")
+# async def get_alerts(user_token: dict = Depends(validate_firebase_token)):
+#     user_id = user_token.get("uid")
+#     alerts = FirestoreService.get_user_alerts(user_id)
+#     return alerts
+@app.get("/alerts-page", response_class=HTMLResponse)
+async def overspending_alerts_page(request: Request):
+    id_token = request.cookies.get("token")
+    user_token = validate_firebase_token(id_token)
+
+    if not user_token:
+        return RedirectResponse("/", status_code=303)
+
+    return templates.TemplateResponse("alert.html", {"request": request, "user_token": user_token})
+
 
 # Delete an overspending alert
 @app.delete("/alerts/{alert_id}")
@@ -398,28 +446,92 @@ async def delete_alert(alert_id: str, user_token: dict = Depends(validate_fireba
 
 
 @app.get("/personalized-financial-suggestion", response_class=HTMLResponse)
-async def pfg_page(request: Request):
-    return templates.TemplateResponse("personalized-financial-suggestion.html", {"request": request})
+async def personalized_financial_suggestion(request: Request):
+    id_token = request.cookies.get("token")
+    user_token = validate_firebase_token(id_token)
+
+    if not user_token:
+        return RedirectResponse("/", status_code=303)
+
+    return templates.TemplateResponse("personalized-financial-suggestion.html", {
+        "request": request,
+        "user_token": user_token
+    })
 
 
 
+# #  predictive insights logic
+# @app.get("/predictive-insights")
+# async def get_predictive_insights(user_token: dict = Depends(validate_firebase_token)):
+#     user_id = user_token.get("uid")
 
-#  predictive insights logic
-@app.get("/predictive-insights")
-async def get_predictive_insights(user_token: dict = Depends(validate_firebase_token)):
-    user_id = user_token.get("uid")
+#     # Simulated insights - in real scenario, you'd run ML models or statistical analysis
+#     Predictive_insights = {
+#         "user_id": user_id,
+#         "monthly_spending_forecast": 245.75,
+#         "likely_budget_exceed": True,
+#         "suggested_savings": 50.00,
+#         "next_high_expense_category": "Dining",
+#         "alerts": [
+#             "Spending on Dining is trending 20% higher than last month.",
+#             "You are on track to exceed your budget for 'Entertainment'."
+#         ]
+#     }
 
-    # Simulated insights - in real scenario, you'd run ML models or statistical analysis
-    Predictive_insights = {
-        "user_id": user_id,
-        "monthly_spending_forecast": 245.75,
-        "likely_budget_exceed": True,
-        "suggested_savings": 50.00,
-        "next_high_expense_category": "Dining",
-        "alerts": [
-            "Spending on Dining is trending 20% higher than last month.",
-            "You are on track to exceed your budget for 'Entertainment'."
-        ]
-    }
+#     return JSONResponse(Predictive_insights)
 
-    return JSONResponse(Predictive_insights)
+@app.get("/predictive-insights-page", response_class=HTMLResponse)
+async def predictive_insights_page(request: Request):
+    id_token = request.cookies.get("token")
+    user_token = validate_firebase_token(id_token)
+
+    if not user_token:
+        return RedirectResponse("/", status_code=303)
+
+    return templates.TemplateResponse("Predictive Insights.html", {"request": request, "user_token": user_token})
+
+@app.get("/user-roles", response_class=HTMLResponse)
+async def user_roles_page(request: Request):
+    id_token = request.cookies.get("token")
+    user_token = validate_firebase_token(id_token)
+
+    if not user_token:
+        return RedirectResponse("/", status_code=303)
+
+    return templates.TemplateResponse("User roles and permissions.html", {"request": request, "user_token": user_token})
+
+@app.get("/budget-warnings", response_class=HTMLResponse)
+async def budget_warnings_page(request: Request):
+    id_token = request.cookies.get("token")
+    user_token = validate_firebase_token(id_token)
+
+    if not user_token:
+        return RedirectResponse("/", status_code=303)
+
+    return templates.TemplateResponse("budget-warnings.html", {"request": request, "user_token": user_token})
+
+@app.get("/expenditure-charts", response_class=HTMLResponse)
+async def expenditure_charts_page(request: Request):
+    id_token = request.cookies.get("token")
+    user_token = validate_firebase_token(id_token)
+
+    if not user_token:
+        return RedirectResponse("/", status_code=303)
+
+    return templates.TemplateResponse("expenditure charts.html", {
+        "request": request,
+        "user_token": user_token
+    })
+
+@app.get("/dashboard", response_class=HTMLResponse)
+async def dashboard_page(request: Request):
+    id_token = request.cookies.get("token")
+    user_token = validate_firebase_token(id_token)
+
+    if not user_token:
+        return RedirectResponse("/", status_code=303)
+
+    return templates.TemplateResponse("Dashboard.html", {
+        "request": request,
+        "user_token": user_token
+    })

@@ -1,698 +1,112 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Financial Management Dashboard</title>
-    <style>
-        :root {
-            --primary-color: #4361ee;
-            --secondary-color: #3f37c9;
-            --accent-color: #4cc9f0;
-            --success-color: #4ade80;
-            --warning-color: #fbbf24;
-            --danger-color: #f87171;
-            --dark-color: #1e293b;
-            --light-color: #f8fafc;
-            --gray-color: #94a3b8;
-        }
+  <meta charset="UTF-8" />
+  <title>Personalized Financial Suggestions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f5f7fa;
+      margin: 0;
+      padding: 20px;
+      color: #1e293b;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+    .container {
+      max-width: 960px;
+      margin: auto;
+    }
 
-        body {
-            background-color: #f1f5f9;
-            color: var(--dark-color);
-            line-height: 1.6;
-        }
+    h1 {
+      font-size: 2rem;
+      color: #4f46e5;
+      margin-bottom: 10px;
+    }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+    p.subheading {
+      color: #64748b;
+      margin-bottom: 30px;
+    }
 
-        header {
-            background-color: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 15px 0;
-            margin-bottom: 30px;
-        }
+    .suggestion-card {
+      background-color: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      margin-bottom: 20px;
+      transition: transform 0.2s ease;
+    }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--primary-color);
-            font-size: 24px;
-            font-weight: bold;
-        }
+    .suggestion-card:hover {
+      transform: translateY(-2px);
+    }
 
-        .dashboard {
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            gap: 20px;
-        }
+    .suggestion-card h2 {
+      font-size: 1.25rem;
+      margin-bottom: 10px;
+      color: #3f3f46;
+    }
 
-        .sidebar {
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            height: fit-content;
-        }
+    .suggestion-card p {
+      color: #475569;
+      line-height: 1.6;
+    }
 
-        .sidebar-menu {
-            list-style: none;
-        }
+    .tip-badge {
+      display: inline-block;
+      background-color: #4ade80;
+      color: white;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      margin-bottom: 10px;
+    }
 
-        .sidebar-menu li {
-            margin-bottom: 10px;
-        }
+    .back-link {
+      display: inline-block;
+      margin-top: 20px;
+      text-decoration: none;
+      color: #4f46e5;
+      font-weight: 600;
+    }
 
-        .sidebar-menu a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 10px;
-            border-radius: 5px;
-            color: var(--dark-color);
-            text-decoration: none;
-            transition: all 0.3s ease;
-        }
-
-        .sidebar-menu a:hover, .sidebar-menu a.active {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        .main-content {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .card {
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .card-header h2 {
-            font-size: 18px;
-            font-weight: 600;
-        }
-
-        .stats-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .stat-card {
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .stat-card h3 {
-            font-size: 16px;
-            color: var(--gray-color);
-        }
-
-        .stat-card .value {
-            font-size: 24px;
-            font-weight: bold;
-        }
-
-        .chart-container {
-            height: 300px;
-            margin-top: 20px;
-        }
-
-        .pie-chart-container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-
-        .pie-chart {
-            flex: 1;
-            height: 250px;
-        }
-
-        .chart-legend {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .color-box {
-            width: 15px;
-            height: 15px;
-            border-radius: 3px;
-        }
-
-        .form-container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 20px;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .form-group label {
-            font-weight: 500;
-        }
-
-        .form-control {
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid var(--gray-color);
-            font-size: 16px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            background-color: var(--primary-color);
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        button:hover {
-            background-color: var(--secondary-color);
-        }
-
-        .tips-container {
-            margin-top: 20px;
-        }
-
-        .tip-card {
-            border-left: 4px solid var(--accent-color);
-            padding: 15px;
-            margin-bottom: 15px;
-            background-color: rgba(76, 201, 240, 0.1);
-            border-radius: 0 5px 5px 0;
-        }
-
-        .tip-card h3 {
-            margin-bottom: 5px;
-            color: var(--accent-color);
-        }
-
-        .progress-container {
-            width: 100%;
-            background-color: #e2e8f0;
-            border-radius: 5px;
-            margin-top: 5px;
-        }
-
-        .progress-bar {
-            height: 10px;
-            border-radius: 5px;
-            background-color: var(--primary-color);
-            transition: width 0.3s ease;
-        }
-
-        .goals-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .goal-card {
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 15px;
-            background-color: white;
-        }
-
-        .goal-card h3 {
-            margin-bottom: 10px;
-        }
-
-        .goal-progress {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .goal-progress span {
-            font-weight: bold;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        @media screen and (max-width: 768px) {
-            .dashboard {
-                grid-template-columns: 1fr;
-            }
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    .back-link:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-    <header>
-        <div class="container">
-            <div class="logo">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                FinanceTracker
-            </div>
-        </div>
-    </header>
+  <div class="container">
+    <h1>💡 Personalized Financial Suggestions</h1>
+    <p class="subheading">Here are some insights and tips based on your spending behavior and financial profile:</p>
 
-    <div class="container">
-        <div class="dashboard">
-            <div class="sidebar">
-                <ul class="sidebar-menu">
-                    <li><a href="#" class="active" data-section="dashboard-section">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
-                        Dashboard
-                    </a></li>
-                    <li><a href="#" data-section="profile-section">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                        Profile
-                    </a></li>
-                    <li><a href="#" data-section="expenses-section">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-                        Expenses
-                    </a></li>
-                    <li><a href="#" data-section="income-section">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="16 12 12 8 8 12"></polyline><line x1="12" y1="16" x2="12" y2="8"></line></svg>
-                        Income
-                    </a></li>
-                    <li><a href="#" data-section="goals-section">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
-                        Goals
-                    </a></li>
-                    <li><a href="#" data-section="suggestions-section">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                        Suggestions
-                    </a></li>
-                </ul>
-            </div>
-            <div class="main-content">
-                <!-- Dashboard Section -->
-                <div id="dashboard-section" class="section">
-                    <div class="stats-cards">
-                        <div class="stat-card">
-                            <h3>Monthly Income</h3>
-                            <div class="value">$4,500</div>
-                        </div>
-                        <div class="stat-card">
-                            <h3>Monthly Expenses</h3>
-                            <div class="value">$2,200</div>
-                        </div>
-                        <div class="stat-card">
-                            <h3>Total Savings</h3>
-                            <div class="value">$2,300</div>
-                        </div>
-                        <div class="stat-card">
-                            <h3>Savings Rate</h3>
-                            <div class="value">51%</div>
-                        </div>
-                    </div>
+    <div class="suggestion-card">
+      <span class="tip-badge">Tip #1</span>
+      <h2>Start or Grow Your Emergency Fund</h2>
+      <p>Consider saving at least 3–6 months’ worth of expenses in an emergency fund. This creates a safety net for unexpected events like medical emergencies or job loss.</p>
+    </div>
 
-                    <div class="card">
-                        <div class="card-header">
-                            <h2>Monthly Expenses Breakdown</h2>
-                        </div>
-                        <div class="pie-chart-container">
-                            <div class="pie-chart" id="expenses-chart"></div>
-                            <div class="chart-legend" id="expenses-legend">
-                                <div class="legend-item">
-                                    <div class="color-box" style="background-color: #FF8042;"></div>
-                                    <span>Housing - $1,200 (54.5%)</span>
-                                </div>
-                                <div class="legend-item">
-                                    <div class="color-box" style="background-color: #00C49F;"></div>
-                                    <span>Food - $400 (18.2%)</span>
-                                </div>
-                                <div class="legend-item">
-                                    <div class="color-box" style="background-color: #FFBB28;"></div>
-                                    <span>Transportation - $250 (11.4%)</span>
-                                </div>
-                                <div class="legend-item">
-                                    <div class="color-box" style="background-color: #0088FE;"></div>
-                                    <span>Entertainment - $150 (6.8%)</span>
-                                </div>
-                                <div class="legend-item">
-                                    <div class="color-box" style="background-color: #FF8042;"></div>
-                                    <span>Utilities - $200 (9.1%)</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <div class="suggestion-card">
+      <span class="tip-badge">Tip #2</span>
+      <h2>Track Subscriptions and Cancel Unused Ones</h2>
+      <p>Audit your monthly subscriptions to find services you no longer use. Redirecting those savings into your goals can accelerate progress without cutting essentials.</p>
+    </div>
 
-                    <div class="card">
-                        <div class="card-header">
-                            <h2>Savings Trend</h2>
-                        </div>
-                        <div class="chart-container" id="savings-chart"></div>
-                    </div>
+    <div class="suggestion-card">
+      <span class="tip-badge">Tip #3</span>
+      <h2>Set Realistic Monthly Budgets</h2>
+      <p>Based on your current income and spending, set flexible budgets for categories like food, transport, and entertainment. Budgeting helps control impulse purchases.</p>
+    </div>
 
-                    <div class="card">
-                        <div class="card-header">
-                            <h2>Personalized Tips</h2>
-                        </div>
-                        <div class="tips-container">
-                            <div class="tip-card">
-                                <h3>Reduce Food Expenses</h3>
-                                <p>Your food expenses are higher than average. Consider meal planning and cooking at home more often to save money.</p>
-                            </div>
-                            <div class="tip-card">
-                                <h3>Start Emergency Fund</h3>
-                                <p>You should aim to save 3-6 months of expenses in an emergency fund. Based on your current expenses, that would be $6,600-$13,200.</p>
-                            </div>
-                            <div class="tip-card">
-                                <h3>Optimize Housing Costs</h3>
-                                <p>Your housing costs are 26.7% of your income, which is within the recommended range of 25-30%. Great job!</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <div class="suggestion-card">
+      <span class="tip-badge">Tip #4</span>
+      <h2>Utilize High-Interest Savings Accounts</h2>
+      <p>Shift your idle cash into a high-yield savings account to earn interest passively while you save toward your financial goals.</p>
+    </div>
 
-                <!-- Profile Section -->
-                <div id="profile-section" class="section hidden">
-                    <div class="card">
-                        <div class="card-header">
-                            <h2>Your Financial Profile</h2>
-                        </div>
-                        <div class="form-container">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="name">Full Name</label>
-                                    <input type="text" id="name" class="form-control" placeholder="Your Name">
-                                </div>
-                                <div class="form-group">
-                                    <label for="age">Age</label>
-                                    <input type="number" id="age" class="form-control" placeholder="Your Age">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="income">Monthly Income</label>
-                                    <input type="number" id="income" class="form-control" placeholder="Your Monthly Income">
-                                </div>
-                                <div class="form-group">
-                                    <label for="risk-tolerance">Risk Tolerance</label>
-                                    <select id="risk-tolerance" class="form-control">
-                                        <option value="">Select Risk Tolerance</option>
-                                        <option value="low">Low (Conservative)</option>
-                                        <option value="medium">Medium (Moderate)</option>
-                                        <option value="high">High (Aggressive)</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="financial-goal">Primary Financial Goal</label>
-                                <select id="financial-goal" class="form-control">
-                                    <option value="">Select Your Goal</option>
-                                    <option value="emergency-fund">Build Emergency Fund</option>
-                                    <option value="debt-free">Become Debt-Free</option>
-                                    <option value="home">Save for a Home</option>
-                                    <option value="retirement">Save for Retirement</option>
-                                    <option value="education">Save for Education</option>
-                                    <option value="investing">Start Investing</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="dependents">Number of Dependents</label>
-                                <input type="number" id="dependents" class="form-control" placeholder="Number of Dependents">
-                            </div>
-                            <button type="button" id="save-profile">Save Profile</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Expenses Section -->
-                <div id="expenses-section" class="section hidden">
-                    <div class="card">
-                        <div class="card-header">
-                            <h2>Track Your Expenses</h2>
-                        </div>
-                        <div class="form-container">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="expense-category">Category</label>
-                                    <select id="expense-category" class="form-control">
-                                        <option value="">Select Category</option>
-                                        <option value="housing">Housing</option>
-                                        <option value="food">Food</option>
-                                        <option value="transportation">Transportation</option>
-                                        <option value="utilities">Utilities</option>
-                                        <option value="entertainment">Entertainment</option>
-                                        <option value="healthcare">Healthcare</option>
-                                        <option value="education">Education</option>
-                                        <option value="personal">Personal</option>
-                                        <option value="other">Other</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="expense-amount">Amount</label>
-                                    <input type="number" id="expense-amount" class="form-control" placeholder="Amount">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="expense-date">Date</label>
-                                    <input type="date" id="expense-date" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="expense-description">Description</label>
-                                    <input type="text" id="expense-description" class="form-control" placeholder="Description">
-                                </div>
-                            </div>
-                            <button type="button" id="add-expense">Add Expense</button>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <h2>Recent Expenses</h2>
-                        </div>
-                        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                            <thead>
-                                <tr style="border-bottom: 1px solid #e2e8f0;">
-                                    <th style="text-align: left; padding: 10px;">Date</th>
-                                    <th style="text-align: left; padding: 10px;">Category</th>
-                                    <th style="text-align: left; padding: 10px;">Description</th>
-                                    <th style="text-align: right; padding: 10px;">Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody id="expenses-table">
-                                <tr style="border-bottom: 1px solid #e2e8f0;">
-                                    <td style="padding: 10px;">2023-05-01</td>
-                                    <td style="padding: 10px;">Housing</td>
-                                    <td style="padding: 10px;">Monthly Rent</td>
-                                    <td style="text-align: right; padding: 10px;">$1,200</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid #e2e8f0;">
-                                    <td style="padding: 10px;">2023-05-02</td>
-                                    <td style="padding: 10px;">Food</td>
-                                    <td style="padding: 10px;">Grocery Shopping</td>
-                                    <td style="text-align: right; padding: 10px;">$150</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid #e2e8f0;">
-                                    <td style="padding: 10px;">2023-05-05</td>
-                                    <td style="padding: 10px;">Transportation</td>
-                                    <td style="padding: 10px;">Gas</td>
-                                    <td style="text-align: right; padding: 10px;">$60</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Income Section -->
-                <div id="income-section" class="section hidden">
-                    <div class="card">
-                        <div class="card-header">
-                            <h2>Track Your Income</h2>
-                        </div>
-                        <div class="form-container">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="income-source">Source</label>
-                                    <select id="income-source" class="form-control">
-                                        <option value="">Select Source</option>
-                                        <option value="salary">Salary</option>
-                                        <option value="freelance">Freelance</option>
-                                        <option value="business">Business</option>
-                                        <option value="rental">Rental</option>
-                                        <option value="investment">Investment</option>
-                                        <option value="other">Other</option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="income-amount">Amount</label>
-                                    <input type="number" id="income-amount" class="form-control" placeholder="Amount">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="income-date">Date</label>
-                                    <input type="date" id="income-date" class="form-control">
-                                </div>
-                                <div class="form-group">
-                                    <label for="income-description">Description</label>
-                                    <input type="text" id="income-description" class="form-control" placeholder="Description">
-                                </div>
-                            </div>
-                            <button type="button" id="add-income">Add Income</button>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <h2>Recent Income</h2>
-                        </div>
-                        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                            <thead>
-                                <tr style="border-bottom: 1px solid #e2e8f0;">
-                                    <th style="text-align: left; padding: 10px;">Date</th>
-                                    <th style="text-align: left; padding: 10px;">Source</th>
-                                    <th style="text-align: left; padding: 10px;">Description</th>
-                                    <th style="text-align: right; padding: 10px;">Amount</th>
-                                </tr>
-                            </thead>
-                            <tbody id="income-table">
-                                <tr style="border-bottom: 1px solid #e2e8f0;">
-                                    <td style="padding: 10px;">2023-05-01</td>
-                                    <td style="padding: 10px;">Salary</td>
-                                    <td style="padding: 10px;">Monthly Salary</td>
-                                    <td style="text-align: right; padding: 10px;">$4,500</td>
-                                </tr>
-                                <tr style="border-bottom: 1px solid #e2e8f0;">
-                                    <td style="padding: 10px;">2023-05-15</td>
-                                    <td style="padding: 10px;">Freelance</td>
-                                    <td style="padding: 10px;">Website Project</td>
-                                    <td style="text-align: right; padding: 10px;">$500</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Goals Section -->
-                <div id="goals-section" class="section hidden">
-                    <div class="card">
-                        <div class="card-header">
-                            <h2>Set Your Financial Goals</h2>
-                        </div>
-                        <div class="form-container">
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="goal-name">Goal Name</label>
-                                    <input type="text" id="goal-name" class="form-control" placeholder="Goal Name">
-                                </div>
-                                <div class="form-group">
-                                    <label for="goal-category">Category</label>
-                                    <select id="goal-category" class="form-control">
-                                        <option value="">Select Category</option>
-                                        <option value="emergency-fund">Emergency Fund</option>
-                                        <option value="debt-payoff">Debt Payoff</option>
-                                        <option value="home">Home Purchase</option>
-                                        <option value="retirement">Retirement</option>
-                                        <option value="education">Education</option>
-                                        <option value="vacation">Vacation</option>
-                                        <option value="other">Other</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group">
-                                    <label for="goal-amount">Target Amount</label>
-                                    <input type="number" id="goal-amount" class="form-control" placeholder="Target Amount">
-                                </div>
-                                <div class="form-group">
-                                    <label for="goal-date">Target Date</label>
-                                    <input type="date" id="goal-date" class="form-control">
-                                </div>
-                            </div>
-                            <button type="button" id="add-goal">Add Goal</button>
-                        </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <h2>Your Goals</h2>
-                        </div>
-                        <div class="goals-container">
-                            <div class="goal-card">
-                                <h3>Emergency Fund</h3>
-                                <p>Target: $15,000 by December 2023</p>
-                                <div class="progress-container">
-                                    <div class="progress-bar" style="width: 40%;"></div>
-                                </div>
-                                <div class="goal-progress">
-                                    <span>$6,000 / $15,000</span> (40%)
-                                </div>
-                            </div>
-                            <div class="goal-card">
-                                <h3>Home Down Payment</h3>
-                                <p>Target: $50,000 by June 2025</p>
-                                <div class="progress-container">
-                                    <div class="progress-bar" style="width: 25%;"></div>
-                                </div>
-                                <div class="goal-progress">
-                                    <span>$12,500 / $50,000</span> (25%)
-                                </div>
-                            </div>
-                            <div class="goal-card">
-                                <h3>Vacation Fund</h3>
-                                <p>Target: $3,000 by August 2023</p>
-                                <div class="progress-container">
-                                    <div class="progress-bar" style="width: 70%;"></div>
-                                </div>
-                                <div class="goal-progress">
-                                    <span>$2,100 / $3,000</span> (70%)
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Suggestions Section -->
-                <div id="suggestions-section" class
+    <a href="/dashboard" class="back-link">← Back to Dashboard</a>
+  </div>
+</body>
+</html>

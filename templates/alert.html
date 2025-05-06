@@ -1,100 +1,206 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Overspending Alerts</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Overspending Alerts</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f9fafb;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+      padding: 10px 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+
+    .logo {
+      font-size: 24px;
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+    }
+
+    .nav-links li a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .nav-links li a.active {
+      color: #4361ee;
+    }
+
+    .logout {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .alerts h2 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .alerts p {
+      margin-bottom: 20px;
+      color: #666;
+    }
+
+    .add-alert {
+      background: #3f37c9;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 15px;
+      margin-bottom: 20px;
+    }
+
+    .budgets {
+      display: grid;
+      gap: 20px;
+    }
+
+    .budget-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      border-left: 5px solid #4cc9f0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .budget-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .edit-alert {
+      background-color: #f87171;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .back-button {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 10px 16px;
+      background-color: #f1f5f9;
+      color: #1e293b;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .back-button:hover {
+      background-color: #e2e8f0;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <nav class="navbar">
-            <div class="logo">💰</div>
-            <ul class="nav-links">
-                <li><a class="active" href="#">Dashboard</a></li>
-                <li><a href="#">Transactions</a></li>
-                <li><a href="#">Bank Connection</a></li>
-                <li><a href="#">Overspending Alerts</a></li>
-                <li><a href="#">User Roles and Permissions</a></li>
-            </ul>
-            <button class="logout">Logout</button>
-        </nav>
+  <div class="container">
+    <nav class="navbar">
+      <div class="logo">💰 FinanceTrack</div>
+      <ul class="nav-links">
+        <li><a href="/dashboard">Dashboard</a></li>
+        <li><a href="/transaction">Transactions</a></li>
+        <li><a href="/connect-bank-account">Bank Connection</a></li>
+        <li><a class="active" href="/alerts-page">Overspending Alerts</a></li>
+        <li><a href="#">User Roles</a></li>
+      </ul>
+      <button class="logout" onclick="document.cookie = 'token=; Max-Age=0'; location.href='/'">Logout</button>
+    </nav>
 
-        <section class="alerts">
-            <h2>Overspending Alerts</h2>
-            <p>Receive notifications when you exceed your set budget limits.</p>
-            <button class="add-alert" onclick="location.href='budget-warnings.html';">Add Alert</button>
+    <section class="alerts">
+      <h2>Overspending Alerts</h2>
+      <p>Receive notifications when you exceed your budget limits.</p>
+      <button class="add-alert" onclick="location.href='/budget-warnings'">➕ Add Alert</button>
 
-            <div class="budgets">
-                <div class="budget-card">
-                    <div class="budget-header">
-                        <h3>Budget 1</h3>
-                        <button class="edit-alert">Edit Alert</button>
-                    </div>
-                    <p><strong>Budget name:</strong> abcdef</p>
-                    <p><strong>Budget spent:</strong> 40%</p>
-                    <p><strong>Amount spent:</strong> £30</p>
-                    <p><strong>Budget limit:</strong> £300</p>
-                </div>
-                <div class="budget-card">
-                    <div class="budget-header">
-                        <h3>Budget 2</h3>
-                        <button class="edit-alert">Edit Alert</button>
-                    </div>
-                    <p><strong>Budget name:</strong> Dummy</p>
-                    <p><strong>Budget spent:</strong> 50%</p>
-                    <p><strong>Amount spent:</strong> £150</p>
-                    <p><strong>Budget limit:</strong> £300</p>
-                </div>
-            </div>
-        </section>
-    </div>
-    <script>
-        async function fetchAlerts() {
-            try {
-                const response = await fetch('/alerts', { method: 'GET', credentials: 'include' });
-                const alerts = await response.json();
-                console.log(alerts);
-                renderAlerts(alerts);
-            } catch (error) {
-                console.error('Error fetching alerts:', error);
-            }
-        }
-        
-        function renderAlerts(alerts) {
-            const budgetsContainer = document.querySelector('.budgets');
-            budgetsContainer.innerHTML = '';
-        
-            alerts.forEach(alert => {
-                const card = document.createElement('div');
-                card.className = 'budget-card';
-                card.innerHTML = `
-                    <div class="budget-header">
-                        <h3>${alert.budget_name}</h3>
-                        <button class="edit-alert" onclick="deleteAlert('${alert.alert_id}')">Delete Alert</button>
-                    </div>
-                    <p><strong>Budget spent:</strong> ${(alert.amount_spent / alert.budget_limit * 100).toFixed(2)}%</p>
-                    <p><strong>Amount spent:</strong> £${alert.amount_spent}</p>
-                    <p><strong>Budget limit:</strong> £${alert.budget_limit}</p>
-                `;
-                budgetsContainer.appendChild(card);
-            });
-        }
-        
-        async function deleteAlert(alertId) {
-            if (!confirm('Are you sure you want to delete this alert?')) return;
-        
-            try {
-                await fetch(`/alerts/${alertId}`, { method: 'DELETE', credentials: 'include' });
-                fetchAlerts(); // Reload alerts
-            } catch (error) {
-                console.error('Error deleting alert:', error);
-            }
-        }
-        
-        // Call fetchAlerts when the page loads
-        document.addEventListener('DOMContentLoaded', fetchAlerts);
-        </script>
+      <div class="budgets">
+        <!-- Budget cards will be injected here -->
+      </div>
+
+      <a href="/" class="back-button">💼 Go to Home</a>
+    </section>
+  </div>
+
+  <script>
+    async function fetchAlerts() {
+      try {
+        const response = await fetch('/alerts', {
+          method: 'GET',
+          credentials: 'include'
+        });
+
+        const alerts = await response.json();
+        renderAlerts(alerts);
+      } catch (error) {
+        console.error('Error fetching alerts:', error);
+      }
+    }
+
+    function renderAlerts(alerts) {
+      const budgetsContainer = document.querySelector('.budgets');
+      budgetsContainer.innerHTML = '';
+
+      alerts.forEach(alert => {
+        const card = document.createElement('div');
+        card.className = 'budget-card';
+        card.innerHTML = `
+          <div class="budget-header">
+            <h3>${alert.budget_name}</h3>
+            <button class="edit-alert" onclick="deleteAlert('${alert.alert_id}')">Delete</button>
+          </div>
+          <p><strong>Budget Spent:</strong> ${(alert.amount_spent / alert.budget_limit * 100).toFixed(2)}%</p>
+          <p><strong>Amount Spent:</strong> £${alert.amount_spent}</p>
+          <p><strong>Budget Limit:</strong> £${alert.budget_limit}</p>
+        `;
+        budgetsContainer.appendChild(card);
+      });
+    }
+
+    async function deleteAlert(alertId) {
+      if (!confirm('Are you sure you want to delete this alert?')) return;
+
+      try {
+        await fetch(`/alerts/${alertId}`, {
+          method: 'DELETE',
+          credentials: 'include'
+        });
+        fetchAlerts(); // Refresh list
+      } catch (error) {
+        console.error('Error deleting alert:', error);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchAlerts);
+  </script>
 </body>
 </html>
